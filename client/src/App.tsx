@@ -51,7 +51,7 @@ function App() {
 
             <div className="container mt-5">
 
-            <h1 className="text-center mb-4">Test gestion des utilisateurs</h1>
+            <h1 className="text-center mb-4">Gestion des utilisateurs</h1>
                 <div>
                     <div className="card mb-4">
                         <div className="card-header">
