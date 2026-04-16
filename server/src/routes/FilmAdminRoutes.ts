@@ -1,6 +1,6 @@
 import {Router, type Request, type Response} from 'express';
-import User from '../models/User.js';
-import * as userController from "../controllers/userControllers.js";
+import User from '../models/Films.js';
+import * as filmControllers from "../controllers/filmControllers.js";
 import { checkIdParam } from '../middlewares/checkIdParam.js';
 
 
@@ -8,43 +8,43 @@ const router = Router();
 
 /**
 * @swagger
-* /api/users:
+* /api/films:
 *   get:
-*       summary: Récupère la liste des utilisateurs
-*       tags: [Users]
+*       summary: Récupère la liste des films
+*       tags: [Films]
 *       responses:
 *           200:
 *               description: Succès
 *           500:
 *               description: Erreur serveur
 */
-router.get("/", userController.getAllUsers);
+router.get("/", filmControllers.getAllFilms);
 
 /**
 * @swagger
-* /api/users:
+* /api/films:
 *   post:
-*       summary: Ajoute un utilisateur à la liste des utilisateurs
-*       tags: [Users]
+*       summary: Ajoute un film à la liste des films
+*       tags: [Films]
 *       responses:
 *           201:
 *               description: Succès
 *           500:
 *               description: Erreur serveur
 */
-router.post('/', userController.createUser);
+router.post('/', filmControllers.createFilm);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/films/{id}:
  *   delete:
- *     summary: Supprime un utilisateur
- *     tags: [Users]
+ *     summary: Supprime un film
+ *     tags: [Films]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: object
  *         required: true
  *         description: Identifiant numérique de l'utilisateur
  *     responses:
@@ -55,6 +55,6 @@ router.post('/', userController.createUser);
  *       500:
  *         description: Erreur serveur
  */
-router.delete('/:id', checkIdParam, userController.deleteUser);
+router.delete('/:id', checkIdParam, filmControllers.deleteFilm);
 
 export default router;
