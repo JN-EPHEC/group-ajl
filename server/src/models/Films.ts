@@ -40,7 +40,7 @@ Film.init(
     // Other model options go here
     sequelize, // We need to pass the connection instance
     modelName: 'film', // We need to choose the model name
-    tableName: 'films'
+    tableName: 'films_data'
   },
 );
 

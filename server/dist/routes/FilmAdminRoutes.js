@@ -1,11 +1,8 @@
-import {Router, type Request, type Response} from 'express';
+import { Router } from 'express';
 import User from '../models/Films.js';
 import * as filmControllers from "../controllers/filmControllers.js";
 import { checkIdParam } from '../middlewares/checkIdParam.js';
-
-
 const router = Router();
-
 /**
 * @swagger
 * /api/films:
@@ -19,7 +16,6 @@ const router = Router();
 *               description: Erreur serveur
 */
 router.get("/", filmControllers.getAllFilms);
-
 /**
 * @swagger
 * /api/films:
@@ -33,7 +29,6 @@ router.get("/", filmControllers.getAllFilms);
 *               description: Erreur serveur
 */
 router.post('/', filmControllers.createFilm);
-
 /**
  * @swagger
  * /api/films/{id}:
@@ -56,5 +51,5 @@ router.post('/', filmControllers.createFilm);
  *         description: Erreur serveur
  */
 router.delete('/:id', checkIdParam, filmControllers.deleteFilm);
-
 export default router;
+//# sourceMappingURL=FilmAdminRoutes.js.map

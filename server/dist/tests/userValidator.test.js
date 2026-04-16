@@ -1,4 +1,4 @@
-import { userValidator } from "../utils/userValidator.ts";
+import { userValidator } from "../utils/userValidator";
 describe("userValidator function", () => {
     const users = [
         { age: 16, role: "admin", email: "test@gmail.com", expected: false },

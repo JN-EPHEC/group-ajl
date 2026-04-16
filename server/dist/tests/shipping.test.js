@@ -1,4 +1,4 @@
-import { calculateShipping } from "../utils/shipping.ts";
+import { calculateShipping } from "../utils/shipping";
 describe("calculateShipping function", () => {
     const distanceCases = [
         { distance: 25, weight: 30, type: "express", expected: 30 },
