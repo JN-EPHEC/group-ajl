@@ -21,7 +21,7 @@ router.get("/", UserControllers.getAllUsers);
 
 /**
 * @swagger
-* /api/films:
+* /api/users:
 *   post:
 *       summary: Ajoute un utilisateur à la liste des utilisateurs
 *       tags: [Users]

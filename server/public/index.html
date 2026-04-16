@@ -2,47 +2,111 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Gestion des utilisateurs</title>
+    <title>Gestion des films</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
-          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="script.js"></script>
 </head>
+
 <body class="bg-light" onload="init();">
 
-    <div class="container mt-5">
+<div class="container mt-5">
 
-        <h1 class="text-center mb-4">Gestion des utilisateurs</h1>
+    <h1 class="text-center mb-4">Gestion des films</h1>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                Liste des étudiants
+    <!-- Liste films -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Liste des films
+        </div>
+
+        <ul id="filmList" class="list-group list-group-flush">
+        </ul>
+    </div>
+
+    <!-- Formulaire films -->
+    <div class="card p-4 shadow-sm mb-4">
+
+        <form id="filmForm">
+
+            <div class="mb-3">
+                <label for="titre" class="form-label">Titre</label>
+                <input type="text" class="form-control" id="titre" required>
             </div>
-            <ul id="userList" class="list-group list-group-flush">
-            </ul>
-        </div>
 
-        <div class="card p-4 shadow-sm">
-            <form id="userForm">
+            <div class="mb-3">
+                <label for="dateDeSortie" class="form-label">Date de sortie</label>
+                <input type="date" class="form-control" id="dateDeSortie" required>
+            </div>
 
-                <div class="mb-3">
-                    <label for="nom" class="form-label">Nom</label>
-                    <input type="text" class="form-control" name="nom" id="nom" required>
-                </div>
+            <div class="mb-3">
+                <label for="realisateur" class="form-label">Réalisateur</label>
+                <input type="text" class="form-control" id="realisateur" required>
+            </div>
 
-                <div class="mb-3">
-                    <label for="prenom" class="form-label">Prénom</label>
-                    <input type="text" class="form-control" name="prenom" id="prenom" required>
-                </div>
+            <div class="mb-3">
+                <label for="duree" class="form-label">Durée (minutes)</label>
+                <input type="number" class="form-control" id="duree" required>
+            </div>
 
-                <button type="button" onclick="soumission_form();" class="btn btn-primary w-100">
-                    Ajouter
-                </button>
+            <div class="mb-3">
+                <label for="genres" class="form-label">Genres</label>
+                <input type="text" class="form-control" id="genres" required>
+            </div>
 
-            </form>
-        </div>
+            <div class="mb-3">
+                <label for="acteurs" class="form-label">Acteurs</label>
+                <input type="text" class="form-control" id="acteurs" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="moyenne" class="form-label">Note moyenne</label>
+                <input type="number" step="0.1" min="0" max="10" class="form-control" id="moyenne" required>
+            </div>
+
+            <button type="button" onclick="soumission_form();" class="btn btn-primary w-100">
+                Ajouter le film
+            </button>
+
+        </form>
 
     </div>
+
+    <!-- Liste utilisateurs -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Liste des utilisateurs
+        </div>
+
+        <ul id="userList" class="list-group list-group-flush">
+        </ul>
+    </div>
+
+    <!-- Formulaire utilisateurs -->
+    <div class="card p-4 shadow-sm">
+
+        <form id="userForm">
+
+            <div class="mb-3">
+                <label for="pseudonyme" class="form-label">Pseudonyme</label>
+                <input type="text" class="form-control" id="pseudonyme" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="mail" class="form-label">Mail</label>
+                <input type="email" class="form-control" id="mail" required>
+            </div>
+
+            <button type="button" onclick="recupUtilisateur();" class="btn btn-primary w-100">
+                Ajouter l'utilisateur
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
 </body>
 </html>
