@@ -6,42 +6,38 @@ class Film extends Model {}
 
 Film.init(
   {
-    // Model attributes are defined here
+      //attributs du modèle
+    film_id:{
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     titre: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     dateDeSortie: {
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
       allowNull: false,
     },
-    realisateur: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    duree: {
+      realisateur_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+              model: 'Realisateur',
+              key: 'realisateur_id',
+          }
+      },
+    duree_minute: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    genres: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    acteurs: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    moyenne: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    }
   },
   {
-    // Other model options go here
-    sequelize, // We need to pass the connection instance
-    modelName: 'film', // We need to choose the model name
-    tableName: 'films_data'
+    //model options
+    sequelize, //connection à l'instance
+    modelName: 'Film', // nom du modèle
+    tableName: 'Films_data'
   },
 );
-
 export default Film;

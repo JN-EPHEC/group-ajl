@@ -61,7 +61,7 @@ Schéma du site:
             ----errorHandler.ts
             ----logger.ts
         ---models
-            ----User.ts
+            ----Users.ts
         ---routes
             ----userRoutes.ts
         ---tests
