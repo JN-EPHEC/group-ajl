@@ -1,5 +1,5 @@
 import {Router, type Request, type Response} from 'express';
-import * as filmControllers from "../controllers/filmControllers.js";
+import * as user_noteControllers from "../controllers/user_noteControllers.js";
 import { checkIdParam } from '../middlewares/checkIdParam.js';
 
 
@@ -7,9 +7,9 @@ const router = Router();
 
 /**
 * @swagger
-* /api/films:
+* /api/user-note/{film_id}/{user_id}
 *   get:
-*       summary: Récupère la liste des films
+*       summary: Récupère la liste des films d'un utilisateur
 *       tags: [Films]
 *       responses:
 *           200:
@@ -17,13 +17,13 @@ const router = Router();
 *           500:
 *               description: Erreur serveur
 */
-router.get("/", filmControllers.getAllFilms);
+router.get("/", user_noteControllers.getAllUser_note);
 
 /**
 * @swagger
-* /api/films:
+* /api/user-note/{film_id}/{user_id}:
 *   post:
-*       summary: Ajoute un film à la liste des films
+*       summary: Ajoute un film à la liste des films d'un utilisateur
 *       tags: [Films]
 *       responses:
 *           201:
@@ -31,13 +31,13 @@ router.get("/", filmControllers.getAllFilms);
 *           500:
 *               description: Erreur serveur
 */
-router.post('/', filmControllers.createFilm);
+router.post('/', user_noteControllers.createUser_note);
 
 /**
  * @swagger
- * /api/films/{id}:
+ * /api/user-note/{film_id}/{user_id}/{user-note_id}:
  *   delete:
- *     summary: Supprime un film
+ *     summary: Supprime un film de la liste d'un utilisateur
  *     tags: [Films]
  *     parameters:
  *       - in: path
@@ -45,7 +45,7 @@ router.post('/', filmControllers.createFilm);
  *         schema:
  *           type: object
  *         required: true
- *         description: Identifiant numérique du film
+ *         description: Identifiant numérique de l'association film - utilisateur
  *     responses:
  *       204:
  *         description: Succès
@@ -54,6 +54,6 @@ router.post('/', filmControllers.createFilm);
  *       500:
  *         description: Erreur serveur
  */
-router.delete('/:id', checkIdParam, filmControllers.deleteFilm);
+router.delete('/:user-note_id', checkIdParam, user_noteControllers.deleteUser_note);
 
 export default router;
