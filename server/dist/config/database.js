@@ -11,11 +11,11 @@ const sequelize = process.env.DATABASE_URL
         logging: false,
     })
     : new Sequelize({
-        username: "postgres",
-        password: "8Pg.A91Y3u72",
+        username: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
         database: "postgres",
-        host: "db.ofsczgyfksxagrclufmc.supabase.co",
-        port: Number(5432),
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT),
         dialect: "postgres",
         dialectOptions: {
             ssl: {
@@ -25,4 +25,5 @@ const sequelize = process.env.DATABASE_URL
         },
         logging: false,
     });
+export default sequelize;
 //# sourceMappingURL=database.js.map

@@ -1,6 +1,5 @@
 import {Router, type Request, type Response} from 'express';
-import User from '../models/User.js';
-import * as userController from "../controllers/userControllers.js";
+import * as UserControllers from "../controllers/UserControllers";
 import { checkIdParam } from '../middlewares/checkIdParam.js';
 
 
@@ -10,7 +9,7 @@ const router = Router();
 * @swagger
 * /api/users:
 *   get:
-*       summary: Récupère la liste des utilisateurs
+*       summary: Récupère la liste des films
 *       tags: [Users]
 *       responses:
 *           200:
@@ -18,7 +17,7 @@ const router = Router();
 *           500:
 *               description: Erreur serveur
 */
-router.get("/", userController.getAllUsers);
+router.get("/", UserControllers.getAllUsers);
 
 /**
 * @swagger
@@ -32,11 +31,11 @@ router.get("/", userController.getAllUsers);
 *           500:
 *               description: Erreur serveur
 */
-router.post('/', userController.createUser);
+router.post('/', UserControllers.createUser);
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/films/{id}:
  *   delete:
  *     summary: Supprime un utilisateur
  *     tags: [Users]
@@ -44,7 +43,7 @@ router.post('/', userController.createUser);
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: object
  *         required: true
  *         description: Identifiant numérique de l'utilisateur
  *     responses:
@@ -55,6 +54,6 @@ router.post('/', userController.createUser);
  *       500:
  *         description: Erreur serveur
  */
-router.delete('/:id', checkIdParam, userController.deleteUser);
+router.delete('/:id', checkIdParam, UserControllers.deleteUser);
 
 export default router;

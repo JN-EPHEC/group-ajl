@@ -12,8 +12,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try{
-        const date_ajd = new Date();
-        await User.create({nom : req.body.nom, prenom : req.body.prenom, createdAt : date_ajd.toLocaleDateString(), updatedAt : date_ajd.toLocaleDateString()});
+        await User.create({pseudonyme : req.body.pseudonyme, mail: req.body.mail});
         res.status(201).json(req.body);
     } catch (error){
         console.log(error);

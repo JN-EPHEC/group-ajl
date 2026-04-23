@@ -7,20 +7,20 @@ class User extends Model {}
 User.init(
   {
     // Model attributes are defined here
-    prenom: {
+    pseudonyme: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    nom: {
+    mail: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
   },
   {
     // Other model options go here
     sequelize, // We need to pass the connection instance
     modelName: 'user', // We need to choose the model name
-    tableName: 'users'
+    tableName: 'user_data'
   },
 );
 

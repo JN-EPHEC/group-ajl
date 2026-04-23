@@ -10,8 +10,7 @@ export const getAllUsers = async (req, res) => {
 };
 export const createUser = async (req, res) => {
     try {
-        const date_ajd = new Date();
-        await User.create({ nom: req.body.nom, prenom: req.body.prenom, createdAt: date_ajd.toLocaleDateString(), updatedAt: date_ajd.toLocaleDateString() });
+        await User.create({ pseudonyme: req.body.pseudonyme, mail: req.body.mail });
         res.status(201).json(req.body);
     }
     catch (error) {
@@ -33,4 +32,4 @@ export const deleteUser = async (req, res) => {
         res.status(500).send("Erreur serveur");
     }
 };
-//# sourceMappingURL=userControllers.js.map
+//# sourceMappingURL=UserControllers.js.map
