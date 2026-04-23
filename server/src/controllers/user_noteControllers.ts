@@ -39,19 +39,28 @@ export const createUser_note = async (req: Request, res: Response) => {
 
         res.status(201).json(nouvelleNote);
 
-    } catch (error) {
-        console.log(error);
-        res.status(500).send("Erreur serveur");
-    }
+    }catch (err) {
+        console.error("CREATE USER NOTE ERROR:", err);
+        return res.status(500).json({ error: err.message });
+}
 };
 
 export const deleteUser_note = async (req: Request, res: Response) => {
     try {
-        await user_note.destroy({
+        const { user_id, film_id } = req.params;
+
+        const deleted = await user_note.destroy({
             where: {
-                id: req.params["id"]
+                user_id: user_id,
+                film_id: film_id
             }
         });
+
+        if (deleted === 0) {
+            return res.status(404).json({
+                error: "Note introuvable"
+            });
+        }
 
         res.status(204).send();
 

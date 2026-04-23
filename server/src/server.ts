@@ -19,7 +19,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use('/api/films', filmsAdminRoutes);
 app.use('/api/users', UsersRoutes);
-app.use('/api/user-note/:user_id/:film_id', user_noteRoutes);
+app.use('/api/user-note', user_noteRoutes);
 //app.use(requestLogger);
 //app.use(errorHandler);
 
