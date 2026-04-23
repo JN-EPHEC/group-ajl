@@ -39,10 +39,10 @@ export const createUser_note = async (req: Request, res: Response) => {
 
         res.status(201).json(nouvelleNote);
 
-    }catch (err) {
-        console.error("CREATE USER NOTE ERROR:", err);
-        return res.status(500).json({ error: err.message });
-}
+    } catch (error){
+        console.log(error);
+        res.status(500).send("Erreur serveur");
+    }
 };
 
 export const deleteUser_note = async (req: Request, res: Response) => {

@@ -7,11 +7,11 @@ class user_note extends Model {}
 user_note.init(
   {
     // Model attributes are defined here
-    ID_film: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    ID_user: {
+    film_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
