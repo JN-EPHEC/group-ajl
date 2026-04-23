@@ -1,6 +1,6 @@
 {
-  "name": "dev3-backend-tp1",
-  "version": "1.0.0",
+  "name": "dev3-backend-projet",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
-    "react": "^19.2.4"
+    "react": "^19.2.4",
+    "react-router-dom": "^7.14.2"
   }
 }
