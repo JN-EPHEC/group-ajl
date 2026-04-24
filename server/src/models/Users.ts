@@ -27,8 +27,8 @@ User.init(
   {
     //model options
     sequelize, //connection à l'instance
-    modelName: 'User', // nom du modèle
-    tableName: 'Users_data'
+    modelName: 'Users', // nom du modèle
+    tableName: 'Users'
   },
 );
 export default User;

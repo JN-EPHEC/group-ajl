@@ -1,5 +1,4 @@
 import {Router, type Request, type Response} from 'express';
-import User from '../models/Films.js';
 import * as filmControllers from "../controllers/filmControllers.js";
 import { checkIdParam } from '../middlewares/checkIdParam.js';
 

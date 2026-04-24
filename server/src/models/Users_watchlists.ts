@@ -11,7 +11,7 @@ User_watchlist.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'User',
+                model: 'Users',
                 key: 'user_id',
             }
         },
@@ -20,7 +20,7 @@ User_watchlist.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Film',
+                model: 'Films',
                 key: 'film_id',
             }
         },
@@ -32,8 +32,8 @@ User_watchlist.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'User_watchlist', // nom du modèle
-        tableName: 'Users_watchlists',
+        modelName: 'Users_watchlist', // nom du modèle
+        tableName: 'Users_watchlist',
     },
 );
 export default User_watchlist;

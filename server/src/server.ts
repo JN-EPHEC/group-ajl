@@ -3,6 +3,8 @@ import type { Request, Response } from 'express';
 import filmsAdminRoutes from './routes/FilmAdminRoutes.js';
 import sequelize from './config/database.js';
 import UsersRoutes from './routes/UsersRoutes.js';
+import user_noteRoutes from './routes/user_noteRoutes.js'
+import realsRoutes from './routes/RealsRoutes.js'
 //import { requestLogger } from './middlewares/logger.js';
 //import { errorHandler } from './middlewares/errorHandler.js';
 import swaggerUi from "swagger-ui-express";
@@ -18,19 +20,10 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use('/api/films', filmsAdminRoutes);
 app.use('/api/users', UsersRoutes);
+app.use('/api/user-note', user_noteRoutes);
+app.use('/api/reals', realsRoutes);
 //app.use(requestLogger);
 //app.use(errorHandler);
-
-
-const filmTest = {
-  titre: "Inception",
-  dateDeSortie: "2010-07-16",
-  realisateur: "Christopher Nolan",
-  duree: 148,
-  genres: "Science-fiction, Action, Thriller",
-  acteurs: "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page",
-  moyenne: 8.8
-};
 
 sequelize.sync().then(() => {
     console.log("Base de données synchronisée");

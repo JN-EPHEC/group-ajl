@@ -11,7 +11,7 @@ Acteur_film.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Acteur',
+                model: 'Acteurs',
                 key: 'acteur_id',
             }
         },
@@ -20,7 +20,7 @@ Acteur_film.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Film',
+                model: 'Films',
                 key: 'film_id',
             }
         },
@@ -28,7 +28,7 @@ Acteur_film.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'Acteur_film', // nom du modèle
+        modelName: 'Acteurs_films', // nom du modèle
         tableName: 'Acteurs_films',
     },
 );

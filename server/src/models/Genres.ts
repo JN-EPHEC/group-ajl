@@ -19,8 +19,8 @@ Genre.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'Genre', // nom du modèle
-        tableName: 'Genres_data',
+        modelName: 'Genres', // nom du modèle
+        tableName: 'Genres',
     },
 );
 export default Genre;

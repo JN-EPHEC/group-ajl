@@ -12,8 +12,8 @@ export const getAllFilms = async (req: Request, res: Response) => {
 
 export const createFilm = async (req: Request, res: Response) => {
     try{
-        await Film.create({titre : req.body.titre, dateDeSortie : req.body.dateDeSortie, realisateur: req.body.realisateur, 
-            duree: req.body.duree, genres: req.body.genres, acteurs: req.body.acteurs, moyenne: req.body.moyenne});
+        await Film.create({titre : req.body.titre, dateDeSortie : req.body.dateDeSortie, realisateur_id: req.body.realisateur_id, 
+            duree_minute: req.body.duree_minute});
         res.status(201).json(req.body);
     } catch (error){
         console.log(error);
