@@ -12,7 +12,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try{
-        await Users.create({pseudonyme : req.body.pseudonyme, mail: req.body.mail});
+        await Users.create({pseudonyme : req.body.pseudonyme, mail: req.body.mail, motdepasse: req.body.motdepasse});
         res.status(201).json(req.body);
     } catch (error){
         console.log(error);

@@ -4,6 +4,7 @@ import filmsAdminRoutes from './routes/FilmAdminRoutes.js';
 import sequelize from './config/database.js';
 import UsersRoutes from './routes/UsersRoutes.js';
 import user_noteRoutes from './routes/user_noteRoutes.js'
+import realsRoutes from './routes/RealsRoutes.js'
 //import { requestLogger } from './middlewares/logger.js';
 //import { errorHandler } from './middlewares/errorHandler.js';
 import swaggerUi from "swagger-ui-express";
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/films', filmsAdminRoutes);
 app.use('/api/users', UsersRoutes);
 app.use('/api/user-note', user_noteRoutes);
+app.use('/api/reals', realsRoutes);
 //app.use(requestLogger);
 //app.use(errorHandler);
 

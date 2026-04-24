@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import user_note from "../models/user_note";
-import User from "../models/User";
+import User from "../models/Users";
 import Film from "../models/Films";
 
 export const getAllUser_note = async (req: Request, res: Response) => {
