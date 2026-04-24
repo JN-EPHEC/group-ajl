@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import user_note from "../models/user_note";
+import user_note from "../models/Users_notes";
 import User from "../models/Users";
 import Film from "../models/Films";
 

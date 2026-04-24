@@ -24,7 +24,7 @@ Film.init(
           type: DataTypes.INTEGER,
           allowNull: false,
           references: {
-              model: 'Realisateur',
+              model: 'Realisateurs',
               key: 'realisateur_id',
           }
       },
@@ -36,8 +36,8 @@ Film.init(
   {
     //model options
     sequelize, //connection à l'instance
-    modelName: 'Film', // nom du modèle
-    tableName: 'Films_data'
+    modelName: 'Films', // nom du modèle
+    tableName: 'Films'
   },
 );
 export default Film;

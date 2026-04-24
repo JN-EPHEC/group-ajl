@@ -23,8 +23,8 @@ Acteur.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'Acteur', // nom du modèle
-        tableName: 'Acteurs_data',
+        modelName: 'Acteurs', // nom du modèle
+        tableName: 'Acteurs',
     },
 );
 export default Acteur;

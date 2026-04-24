@@ -11,7 +11,7 @@ User_note.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'User',
+                model: 'Users',
                 key: 'user_id',
             }
         },
@@ -20,7 +20,7 @@ User_note.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Film',
+                model: 'Films',
                 key: 'film_id',
             }
         },
@@ -36,7 +36,7 @@ User_note.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'User_note', // nom du modèle
+        modelName: 'Users_notes', // nom du modèle
         tableName: 'Users_notes',
     },
 );

@@ -23,8 +23,8 @@ Realisateur.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'Realisateur', // nom du modèle
-        tableName: 'Realisateurs_data',
+        modelName: 'Realisateurs', // nom du modèle
+        tableName: 'Realisateurs',
     },
 );
 export default Realisateur;

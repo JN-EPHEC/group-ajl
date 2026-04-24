@@ -11,7 +11,7 @@ Genre_film.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Genre',
+                model: 'Genres',
                 key: 'genre_id',
             }
         },
@@ -28,7 +28,7 @@ Genre_film.init(
     {
         //model options
         sequelize, //connection à l'instance
-        modelName: 'Genre_film', // nom du modèle
+        modelName: 'Genres_films', // nom du modèle
         tableName: 'Genres_films',
     },
 );
