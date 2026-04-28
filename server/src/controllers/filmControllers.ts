@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import Film from "../models/Films";
 import Acteurs from '../models/Acteurs';
 import Acteurs_films from '../models/Acteurs_films';
+import Genres from "../models/Genres";
+import Genres_films from "../models/Genres_films";
 
 export const getAllFilms = async (req: Request, res: Response) => {
     try {
@@ -31,7 +33,31 @@ export const getActeursByFilms = async (req: Request, res: Response) => {
              }
 });
 
-        res.status(200).json(acteurs);
+    res.status(200).json(acteurs);
+    } catch (error) {
+        res.status(500).json({ error: (error as any).message });
+    }
+};
+
+export const getGenresByFilms = async (req: Request, res: Response) => {
+    try {
+
+        const liens = await Genres_films.findAll({
+            where: 
+            { 
+                film_id: req.params['film_id'], 
+            }
+        });
+
+        const ids = liens.map((l: any) => l.genre_id);
+
+        const genres = await Genres.findAll({
+            where: {
+                genre_id: ids
+             }
+});
+
+    res.status(200).json(genres);
     } catch (error) {
         res.status(500).json({ error: (error as any).message });
     }

@@ -20,7 +20,7 @@ Genre_film.init(
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'Film',
+                model: 'Films',
                 key: 'film_id',
             }
         },

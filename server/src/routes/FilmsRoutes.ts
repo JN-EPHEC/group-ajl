@@ -21,7 +21,7 @@ router.get("/", filmControllers.getAllFilms);
 
 /**
  * @swagger
- * /api/films/{film_id}:
+ * /api/films/{film_id}/acteurs:
  *   get:
  *     summary: Récupère tous les acteurs d'un film
  *     tags: [Films]
@@ -31,7 +31,21 @@ router.get("/", filmControllers.getAllFilms);
  *       500:
  *         description: Erreur serveur
  */
-router.get("/:film_id", filmControllers.getActeursByFilms);
+router.get("/:film_id/acteurs", filmControllers.getActeursByFilms);
+
+/**
+ * @swagger
+ * /api/films/{film_id}/genres:
+ *   get:
+ *     summary: Récupère tous les genres d'un film
+ *     tags: [Genres]
+ *     responses:
+ *       200:
+ *         description: Succès
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/:film_id/genres", filmControllers.getGenresByFilms);
 
 /**
 * @swagger
