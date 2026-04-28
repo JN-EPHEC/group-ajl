@@ -1,6 +1,6 @@
 import express from 'express';
 import type { Request, Response } from 'express';
-import filmsAdminRoutes from './routes/FilmAdminRoutes.js';
+import filmsRoutes from './routes/FilmsRoutes.js';
 import sequelize from './config/database.js';
 import UsersRoutes from './routes/UsersRoutes.js';
 import user_noteRoutes from './routes/user_noteRoutes.js';
@@ -20,7 +20,7 @@ app.use(cors()); // Autorise tout le monde (acceptable uniquement en dev)
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static('public'));
 app.use(express.json());
-app.use('/api/films', filmsAdminRoutes);
+app.use('/api/films', filmsRoutes);
 app.use('/api/users', UsersRoutes);
 app.use('/api/user-note', user_noteRoutes);
 app.use('/api/reals', realsRoutes);

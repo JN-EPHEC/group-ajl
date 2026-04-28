@@ -20,6 +20,20 @@ const router = Router();
 router.get("/", filmControllers.getAllFilms);
 
 /**
+ * @swagger
+ * /api/films/{film_id}:
+ *   get:
+ *     summary: Récupère tous les acteurs d'un film
+ *     tags: [Films]
+ *     responses:
+ *       200:
+ *         description: Succès
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/:film_id", filmControllers.getActeursByFilms);
+
+/**
 * @swagger
 * /api/films:
 *   post:
