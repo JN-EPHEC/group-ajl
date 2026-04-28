@@ -3,8 +3,10 @@ import type { Request, Response } from 'express';
 import filmsAdminRoutes from './routes/FilmAdminRoutes.js';
 import sequelize from './config/database.js';
 import UsersRoutes from './routes/UsersRoutes.js';
-import user_noteRoutes from './routes/user_noteRoutes.js'
-import realsRoutes from './routes/RealsRoutes.js'
+import user_noteRoutes from './routes/user_noteRoutes.js';
+import realsRoutes from './routes/RealsRoutes.js';
+import acteursRoutes from './routes/ActeursRoutes.js';
+import acteurs_filmsRoutes from './routes/Acteurs_filmsRoutes.js';
 //import { requestLogger } from './middlewares/logger.js';
 //import { errorHandler } from './middlewares/errorHandler.js';
 import swaggerUi from "swagger-ui-express";
@@ -22,6 +24,8 @@ app.use('/api/films', filmsAdminRoutes);
 app.use('/api/users', UsersRoutes);
 app.use('/api/user-note', user_noteRoutes);
 app.use('/api/reals', realsRoutes);
+app.use('/api/acteurs', acteursRoutes);
+app.use('/api/acteurs-films', acteurs_filmsRoutes);
 //app.use(requestLogger);
 //app.use(errorHandler);
 
