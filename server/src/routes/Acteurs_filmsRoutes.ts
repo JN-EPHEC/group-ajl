@@ -20,6 +20,20 @@ router.get("/", Acteurs_filmsControllers.getAllActeurs_films);
 
 /**
  * @swagger
+ * /api/acteurs-films/{film_id}
+ *   get:
+ *     summary: Récupère tous les acteurs d'un films
+ *     tags: [Acteurs_films]
+ *     responses:
+ *       200:
+ *         description: Succès
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/:film_id", Acteurs_filmsControllers.getActeurs_film);
+
+/**
+ * @swagger
  * /api/acteurs-films:
  *   post:
  *     summary: Ajoute un acteur à un films

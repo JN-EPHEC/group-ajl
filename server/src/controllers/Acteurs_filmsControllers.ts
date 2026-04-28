@@ -12,6 +12,23 @@ export const getAllActeurs_films = async (req: Request, res: Response) => {
     }
 };
 
+export const getActeurs_film = async (req: Request, res: Response) => {
+    try {
+        const film_id = req.params['film_id'];
+
+        const films = await Acteurs_films.findAll({
+            where: 
+            { 
+                film_id: film_id, 
+            }
+        });
+
+        res.status(200).json(films);
+    } catch (error) {
+        res.status(500).json({ error: (error as any).message });
+    }
+};
+
 export const createActeurs_films = async (req: Request, res: Response) => {
     try {
         const { acteur_id, film_id } = req.body;
