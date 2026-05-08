@@ -14,13 +14,6 @@ import genres_filmsRoutes from './routes/Genres_FilmsRoutes.js';
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
 import cors from 'cors';
-import Film from './models/Films.js';
-import User from './models/Users.js';
-import User_note from './models/Users_notes.js';
-import Users_watchlist from './models/Users_watchlists.js';
-import Realisateur from './models/Realisateurs.js';
-import Genre from './models/Genres.js';
-import Acteur from './models/Acteurs.js';
 
 const app = express();
 const port = 3000;
@@ -29,36 +22,6 @@ app.use(cors()); // Autorise tout le monde (acceptable uniquement en dev)
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static('public'));
 app.use(express.json());
-
-User_note.belongsTo(Film, { foreignKey: 'film_id' });
-Film.hasMany(User_note, { foreignKey: 'film_id' });
-
-User_note.belongsTo(User, { foreignKey: 'user_id' });
-User.hasMany(User_note, { foreignKey: 'user_id' });
-
-Users_watchlist.belongsTo(Film, { foreignKey: 'film_id' });
-Film.hasMany(Users_watchlist, { foreignKey: 'film_id' });
-
-Users_watchlist.belongsTo(User, { foreignKey: 'user_id' });
-User.hasMany(Users_watchlist, { foreignKey: 'user_id' });
-
-Film.belongsTo(Realisateur, { foreignKey: 'realisateur_id' });
-Film.hasMany(User_note, { foreignKey: 'film_id' });
-
-Film.belongsToMany(Genre, { through: 'Genres_Films', foreignKey: 'film_id' });
-Genre.belongsToMany(Film, { through: 'Genres_Films', foreignKey: 'genre_id' });
-
-Film.belongsToMany(Acteur, { 
-    through: 'Acteurs_films', 
-    foreignKey: 'film_id', 
-    otherKey: 'acteur_id' 
-});
-Acteur.belongsToMany(Film, { 
-    through: 'Acteurs_films', 
-    foreignKey: 'acteur_id', 
-    otherKey: 'film_id' 
-});
-
 app.use('/api/films', filmsRoutes);
 app.use('/api/users', UsersRoutes);
 app.use('/api/user-note', user_noteRoutes);

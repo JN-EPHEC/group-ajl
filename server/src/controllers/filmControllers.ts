@@ -1,109 +1,90 @@
 import type { Request, Response } from "express";
-import Film from '../models/Films.js';
-import Realisateur from '../models/Realisateurs.js';
-import Genre from '../models/Genres.js';
-import User_note from '../models/Users_notes.js';
-import Acteur from '../models/Acteurs.js';
-import { Sequelize } from 'sequelize'; 
+import Film from "../models/Films";
+import Acteurs from '../models/Acteurs';
+import Acteurs_films from '../models/Acteurs_films';
+import Genres from "../models/Genres";
+import Genres_films from "../models/Genres_films";
 
-// 1. Récupérer tous les films (déjà fait)
 export const getAllFilms = async (req: Request, res: Response) => {
     try {
-        const films = await Film.findAll({
-            attributes: {
-                include: [
-                    [
-                        Sequelize.fn('AVG', Sequelize.col('Users_notes.note')), 
-                        'moyenne'
-                    ]
-                ]
-            },
-            include: [
-                { 
-                    model: Realisateur, 
-                    attributes: ['nom', 'prenom'] 
-                },
-                { 
-                    model: Genre, 
-                    attributes: ['nom'], 
-                    through: { attributes: [] } 
-                },
-                { 
-                    model: User_note, 
-                    attributes: [] 
-                }
-            ],
-            group: ['Films.film_id'],
-            subQuery: false 
-        });
-
+        const films = await Film.findAll();
         res.status(200).json(films);
     } catch (error) {
-        console.error("ERREUR SQL :", error); 
         res.status(500).json({ error: (error as any).message });
     }
 };
 
-// 2. Récupérer un film par son ID 
-export const getFilmById = async (req: Request, res: Response) => {
-    try {
-        const id = parseInt(req.params.id as string, 10);
 
-        const film = await Film.findByPk(id, {
-            attributes: {
-                include: [
-                    [
-                        Sequelize.fn('AVG', Sequelize.col('Users_notes.note')), 
-                        'moyenne'
-                    ]
-                ]
-            },
-            include: [
-                { model: Realisateur, attributes: ['nom', 'prenom'] },
-                { model: Genre, attributes: ['nom'], through: { attributes: [] } },
-                { model: Acteur, attributes: ['nom', 'prenom'], through: { attributes: [] } },
-                { model: User_note, attributes: [] } // Obligatoire pour que le AVG fonctionne
-            ],
-           
-            group: ['Films.film_id', 'Realisateur.realisateur_id'] 
+export const getActeursByFilms = async (req: Request, res: Response) => {
+    try {
+
+        const liens = await Acteurs_films.findAll({
+            where: 
+            { 
+                film_id: req.params['film_id'], 
+            }
         });
 
-        if (film) {
-            res.status(200).json(film);
-        } else {
-            res.status(404).json({ message: "Film non trouvé" });
-        }
-    } catch (error) {
-        console.error("Erreur dans getFilmById :", error);
-        res.status(500).json({ error: (error as any).message });
-    }
-};
-// 3. Créer un film 
-export const createFilm = async (req: Request, res: Response) => {
-    try {
-        const nouveauFilm = await Film.create(req.body);
-        res.status(201).json(nouveauFilm);
-    } catch (error) {
-        res.status(500).json({ error: (error as any).message });
-    }
-};
+        const ids = liens.map((l: any) => l.acteur_id);
 
-// 4. Supprimer un film 
-export const deleteFilm = async (req: Request, res: Response) => {
-    try {
-        const deleted = await Film.destroy({ where: { film_id: req.params.id } });
-        if (deleted) res.status(204).send();
-        else res.status(404).json({ message: "Film non trouvé" });
+        const acteurs = await Acteurs.findAll({
+            where: {
+                acteur_id: ids
+             }
+});
+
+    res.status(200).json(acteurs);
     } catch (error) {
         res.status(500).json({ error: (error as any).message });
     }
-};
-
-// 5. Placeholders pour les fonctions manquantes 
-export const getActeursByFilms = async (req: Request, res: Response) => {
-    res.status(501).json({ message: "Non implémenté" });
 };
 
 export const getGenresByFilms = async (req: Request, res: Response) => {
-    res.status(501).json({ message: "Non implémenté" });
+    try {
+
+        const liens = await Genres_films.findAll({
+            where: 
+            { 
+                film_id: req.params['film_id'], 
+            }
+        });
+
+        const ids = liens.map((l: any) => l.genre_id);
+
+        const genres = await Genres.findAll({
+            where: {
+                genre_id: ids
+             }
+});
+
+    res.status(200).json(genres);
+    } catch (error) {
+        res.status(500).json({ error: (error as any).message });
+    }
+};
+
+export const createFilm = async (req: Request, res: Response) => {
+    try{
+        await Film.create({titre : req.body.titre, dateDeSortie : req.body.dateDeSortie, realisateur_id: req.body.realisateur_id, 
+            duree_minute: req.body.duree_minute});
+        res.status(201).json(req.body);
+    } catch (error){
+        console.log(error);
+        res.status(500).send("Erreur serveur");
+    }
+};
+
+export const deleteFilm = async (req: Request, res: Response) => {
+    try{
+        await Film.destroy({
+            where: {
+                id: req.params['id']
+            }
+        });
+        res.status(204).json(req.body);
+
+    }catch (error){
+        console.log(error);
+        res.status(500).send("Erreur serveur");
+    }
 };

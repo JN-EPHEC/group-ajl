@@ -29,12 +29,7 @@ export const getUsers_watchlist = async (req: Request, res: Response) => {
             where:
                 {
                     user_id: req.params['user_id']
-                },
-            // AJOUT DE L'INCLUDE POUR LE FRONTEND
-            include: [{ 
-                model: Film, 
-                attributes: ['film_id', 'titre', 'img', 'dateDeSortie'] 
-            }]
+                }
         });
         res.status(200).json(users_watchlist);
     } catch (error) {

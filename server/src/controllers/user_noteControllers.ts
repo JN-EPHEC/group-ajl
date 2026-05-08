@@ -5,9 +5,7 @@ import Film from "../models/Films";
 
 export const getAllUser_note = async (req: Request, res: Response) => {
     try {
-        const films = await user_note.findAll({
-            include: [{ model: Film, attributes: ['titre'] }] 
-        });
+        const films = await user_note.findAll();
         res.status(200).json(films);
     } catch (error) {
         res.status(500).json({ error: (error as any).message });
