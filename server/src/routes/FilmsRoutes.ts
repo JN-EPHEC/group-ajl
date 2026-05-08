@@ -21,6 +21,29 @@ router.get("/", filmControllers.getAllFilms);
 
 /**
  * @swagger
+ * /api/films/{id}:
+ *   get:
+ *     summary: Récupère les détails d'un film spécifique
+ *     tags: [Films]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Identifiant numérique du film
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Succès
+ *       404:
+ *         description: Film non trouvé
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/:id", checkIdParam, filmControllers.getFilmById);
+
+/**
+ * @swagger
  * /api/films/{film_id}/acteurs:
  *   get:
  *     summary: Récupère tous les acteurs d'un film
