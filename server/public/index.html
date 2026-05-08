@@ -2,111 +2,118 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Gestion des films</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="script.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Test DB - Movies App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f1f3f5; padding: 40px 0; }
+        .card { border: none; border-radius: 12px; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .section-title { font-weight: 800; margin-bottom: 20px; color: #2d3436; border-left: 5px solid; padding-left: 15px; }
+    </style>
 </head>
+<body>
 
-<body class="bg-light" onload="init();">
+<div class="container">
+    <h1 class="text-center mb-5 fw-bold">🛠️ Panneau de Contrôle Base de Données</h1>
 
-<div class="container mt-5">
-
-    <h1 class="text-center mb-4">Gestion des films</h1>
-
-    <!-- Liste films -->
-    <div class="card mb-4">
-        <div class="card-header">
-            Liste des films
+    <div class="row g-4">
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 h-100">
+                <h4 class="section-title border-dark">1. Créer un Film</h4>
+                <form id="filmForm">
+                    <input type="text" id="titre" placeholder="Titre" class="form-control mb-2" required>
+                    <input type="date" id="dateDeSortie" class="form-control mb-2" required>
+                    <input type="number" id="realisateur_id" placeholder="ID Réalisateur" class="form-control mb-2" required>
+                    <input type="number" id="duree_minute" placeholder="Durée (min)" class="form-control mb-2" required>
+                    <textarea id="synopsis" placeholder="Synopsis" class="form-control mb-2"></textarea>
+                    <input type="url" id="img" placeholder="URL Image" class="form-control mb-2">
+                    <button type="button" onclick="soumission_form();" class="btn btn-dark w-100">Ajouter le Film</button>
+                </form>
+            </div>
         </div>
-
-        <ul id="filmList" class="list-group list-group-flush">
-        </ul>
-    </div>
-
-    <!-- Formulaire films -->
-    <div class="card p-4 shadow-sm mb-4">
-
-        <form id="filmForm">
-
-            <div class="mb-3">
-                <label for="titre" class="form-label">Titre</label>
-                <input type="text" class="form-control" id="titre" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="dateDeSortie" class="form-label">Date de sortie</label>
-                <input type="date" class="form-control" id="dateDeSortie" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="realisateur" class="form-label">Réalisateur</label>
-                <input type="text" class="form-control" id="realisateur" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="duree" class="form-label">Durée (minutes)</label>
-                <input type="number" class="form-control" id="duree" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="genres" class="form-label">Genres</label>
-                <input type="text" class="form-control" id="genres" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="acteurs" class="form-label">Acteurs</label>
-                <input type="text" class="form-control" id="acteurs" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="moyenne" class="form-label">Note moyenne</label>
-                <input type="number" step="0.1" min="0" max="10" class="form-control" id="moyenne" required>
-            </div>
-
-            <button type="button" onclick="soumission_form();" class="btn btn-primary w-100">
-                Ajouter le film
-            </button>
-
-        </form>
-
-    </div>
-
-    <!-- Liste utilisateurs -->
-    <div class="card mb-4">
-        <div class="card-header">
-            Liste des utilisateurs
+        <div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4 h-100 border-primary">
+            <h4 class="section-title border-primary text-primary">0.1 Créer un Acteur</h4>
+            <input type="text" id="acteur_nom" placeholder="Nom de l'acteur" class="form-control mb-2">
+            <input type="text" id="acteur_prenom" placeholder="Prénom de l'acteur" class="form-control mb-2">
+            <button onclick="ajouterActeur();" class="btn btn-primary w-100">Créer l'Acteur</button>
         </div>
-
-        <ul id="userList" class="list-group list-group-flush">
-        </ul>
     </div>
 
-    <!-- Formulaire utilisateurs -->
-    <div class="card p-4 shadow-sm">
-
-        <form id="userForm">
-
-            <div class="mb-3">
-                <label for="pseudonyme" class="form-label">Pseudonyme</label>
-                <input type="text" class="form-control" id="pseudonyme" required>
-            </div>
-
-            <div class="mb-3">
-                <label for="mail" class="form-label">Mail</label>
-                <input type="email" class="form-control" id="mail" required>
-            </div>
-
-            <button type="button" onclick="recupUtilisateur();" class="btn btn-primary w-100">
-                Ajouter l'utilisateur
-            </button>
-
-        </form>
-
+    <div class="col-md-6">
+        <div class="card shadow-sm p-4 h-100 border-info">
+            <h4 class="section-title border-info text-info">0.2 Créer un Genre</h4>
+            <input type="text" id="genre_nom" placeholder="Nom du genre (ex: Science-Fiction)" class="form-control mb-2">
+            <button onclick="ajouterGenre();" class="btn btn-info w-100 text-white">Créer le Genre</button>
+        </div>
     </div>
-
+</div>
+        <div class="col-md-6">
+    <div class="card shadow-sm p-4 h-100 border-secondary">
+        <h4 class="section-title border-secondary text-secondary">0. Créer un Réalisateur</h4>
+        <p class="small text-muted">À faire AVANT de créer un film.</p>
+        <input type="text" id="real_nom" placeholder="Nom" class="form-control mb-2">
+        <input type="text" id="real_prenom" placeholder="Prénom" class="form-control mb-2">
+        <button onclick="ajouterRealisateur();" class="btn btn-secondary w-100">Créer le Réalisateur</button>
+    </div>
 </div>
 
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 h-100">
+                <h4 class="section-title border-primary text-primary">2. Gérer les Utilisateurs</h4>
+                <input type="text" id="pseudo" placeholder="Pseudonyme" class="form-control mb-2">
+                <input type="email" id="mail" placeholder="Email" class="form-control mb-2">
+                <button onclick="ajouterUser();" class="btn btn-primary w-100 mb-4">Créer l'Utilisateur</button>
+
+                <h4 class="section-title border-warning text-warning">3. Watchlist</h4>
+                <div class="row g-2">
+                    <div class="col-6"><input type="number" id="watch_user_id" placeholder="ID User" class="form-control"></div>
+                    <div class="col-6"><input type="number" id="watch_film_id" placeholder="ID Film" class="form-control"></div>
+                </div>
+                <button onclick="ajouterAWatchlist();" class="btn btn-warning w-100 mt-2">Ajouter à la Liste</button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 h-100">
+                <h4 class="section-title border-success text-success">4. Évaluer un Film</h4>
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><input type="number" id="note_user_id" placeholder="ID User" class="form-control"></div>
+                    <div class="col-4"><input type="number" id="note_film_id" placeholder="ID Film" class="form-control"></div>
+                    <div class="col-4"><input type="number" id="note_valeur" placeholder="Note 1-5" class="form-control"></div>
+                </div>
+                <textarea id="note_comm" placeholder="Votre avis..." class="form-control mb-2"></textarea>
+                <button onclick="ajouterNote();" class="btn btn-success w-100">Publier la Note</button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4 h-100">
+                <h4 class="section-title border-info text-info">5. Lier Genres & Acteurs</h4>
+                
+                <p class="small text-muted mb-1">Associer un Genre :</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-5"><input type="number" id="genre_film_id" placeholder="ID Film" class="form-control"></div>
+                    <div class="col-5"><input type="number" id="genre_id" placeholder="ID Genre" class="form-control"></div>
+                    <div class="col-2"><button onclick="lierGenre();" class="btn btn-info text-white w-100">OK</button></div>
+                </div>
+
+                <p class="small text-muted mb-1">Associer un Acteur :</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-4"><input type="number" id="act_film_id" placeholder="ID Film" class="form-control"></div>
+                    <div class="col-4"><input type="number" id="act_id" placeholder="ID Acteur" class="form-control"></div>
+                    <div class="col-4"><input type="text" id="act_role" placeholder="Rôle" class="form-control"></div>
+                </div>
+                <button onclick="lierActeur();" class="btn btn-danger w-100">Lier l'Acteur</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

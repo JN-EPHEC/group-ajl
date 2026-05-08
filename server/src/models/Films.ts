@@ -1,16 +1,14 @@
-import { DataTypes, Model} from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database.js';
-
 
 class Film extends Model {}
 
 Film.init(
   {
-      //attributs du modèle
-    film_id:{
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+    film_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     titre: {
       type: DataTypes.STRING,
@@ -20,24 +18,33 @@ Film.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
-      realisateur_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-          references: {
-              model: 'Realisateurs',
-              key: 'realisateur_id',
-          }
-      },
+    realisateur_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Realisateurs',
+        key: 'realisateur_id',
+      }
+    },
     duree_minute: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    
+    img: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    synopsis: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
-    //model options
-    sequelize, //connection à l'instance
-    modelName: 'Films', // nom du modèle
+    sequelize,
+    modelName: 'Films',
     tableName: 'Films'
   },
 );
+
 export default Film;
