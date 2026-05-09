@@ -53,12 +53,12 @@ export const createUser_note = async (req: Request, res: Response) => {
 // 3. Supprimer une note
 export const deleteUser_note = async (req: Request, res: Response) => {
     try {
-        const { id_user, id_film } = req.params;
+        const { user_id, film_id } = req.params;
 
         const deleted = await UserNote.destroy({
             where: {
-                id_user: id_user,
-                id_film: id_film
+                id_user: user_id, // on associe la colonne id_user au paramètre user_id
+                id_film: film_id  // on associe la colonne id_film au paramètre film_id
             }
         });
 
@@ -89,5 +89,48 @@ export const getNotesByUserId = async (req: Request, res: Response) => {
         res.status(200).json(notes);
     } catch (error) {
         res.status(500).json({ error: "Erreur lors de la récupération des notes" });
+    }
+};
+
+// 5. Récupérer la note d'un utilisateur pour un film spécifique
+export const getUserNoteForFilm = async (req: Request, res: Response) => {
+    try {
+        const { user_id, film_id } = req.params;
+        const note = await UserNote.findOne({
+            where: { id_user: user_id, id_film: film_id }
+        });
+        
+        if (!note) {
+            return res.status(404).json({ message: "Aucune note trouvée" });
+        }
+        res.status(200).json(note);
+    } catch (error) {
+        res.status(500).json({ error: "Erreur lors de la récupération de la note" });
+    }
+};
+
+// 6. Modifier une note existante
+export const updateUser_note = async (req: Request, res: Response) => {
+    try {
+        const { user_id, film_id } = req.params;
+        const { note, commentaire } = req.body;
+
+        const [updated] = await UserNote.update(
+            { note: note, commentaire: commentaire },
+            { where: { id_user: user_id, id_film: film_id } }
+        );
+
+        if (updated === 0) {
+            return res.status(404).json({ error: "Note introuvable ou aucune modification effectuée" });
+        }
+
+        const updatedNote = await UserNote.findOne({
+            where: { id_user: user_id, id_film: film_id }
+        });
+
+        res.status(200).json(updatedNote);
+    } catch (error) {
+        console.error("Erreur dans updateUser_note :", error);
+        res.status(500).json({ error: "Erreur serveur lors de la modification" });
     }
 };

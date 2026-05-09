@@ -51,7 +51,7 @@ export const getFilmById = async (req: Request, res: Response) => {
             attributes: {
                 include: [
                     [
-                        // ✅ CORRECTION : User_notes (sans 's' à User)
+                        
                         sequelize.fn('AVG', sequelize.col('User_notes.note')), 
                         'moyenne'
                     ]
@@ -63,7 +63,7 @@ export const getFilmById = async (req: Request, res: Response) => {
                 { model: Acteur, attributes: ['nom', 'prenom'], through: { attributes: [] } },
                 { model: User_note, attributes: [] }
             ],
-            // ✅ CORRECTION : Noms des colonnes pour le GROUP BY
+            
             group: [
                 'Film.id_film', 
                 'Realisateur.id_real',

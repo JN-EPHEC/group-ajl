@@ -10,10 +10,16 @@ export const MovieDetails = () => {
     const [error, setError] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<{ type: string, msg: string } | null>(null);
 
+    // États pour gérer l'avis de l'utilisateur
+    const [userReview, setUserReview] = useState<{ note: number | string, commentaire: string } | null>(null);
+    const [reviewForm, setReviewForm] = useState({ note: 10, commentaire: "" });
+    const [isEditingReview, setIsEditingReview] = useState(false);
+
     const API_URL = import.meta.env.VITE_API_URL;
-    const userId = 1;
+    const userId = 1; // ID temporaire
 
     useEffect(() => {
+        // 1. Récupérer les détails du film
         fetch(`${API_URL}/api/films/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("Film introuvable");
@@ -27,6 +33,20 @@ export const MovieDetails = () => {
                 setError(err.message);
                 setIsLoading(false);
             });
+
+        // 2. Récupérer l'avis de l'utilisateur s'il existe (Route : users-notes)
+        fetch(`${API_URL}/api/users-notes/${userId}/${id}`)
+            .then(res => {
+                if (res.ok) return res.json();
+                return null;
+            })
+            .then(data => {
+                if (data) {
+                    setUserReview(data);
+                    setReviewForm({ note: data.note, commentaire: data.commentaire || "" });
+                }
+            })
+            .catch(err => console.error("Erreur récupération avis", err));
     }, [id, API_URL]);
 
     const handleAddToWatchlist = async () => {
@@ -50,10 +70,61 @@ export const MovieDetails = () => {
         }
     };
 
+    const handleSubmitReview = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const method = userReview ? "PUT" : "POST";
+        const url = userReview 
+            ? `${API_URL}/api/users-notes/${userId}/${id}` 
+            : `${API_URL}/api/users-notes/`;
+
+        const bodyData = userReview 
+            ? { note: reviewForm.note, commentaire: reviewForm.commentaire } 
+            : { id_user: userId, id_film: parseInt(id || '0'), note: reviewForm.note, commentaire: reviewForm.commentaire };
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyData)
+            });
+
+            if (res.ok) {
+                const updatedReview = await res.json();
+                setUserReview(updatedReview);
+                setIsEditingReview(false);
+                alert(userReview ? "Avis modifié avec succès !" : "Avis ajouté !");
+            } else {
+                alert("Erreur lors de l'enregistrement de l'avis.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteReview = async () => {
+        if (!window.confirm("Voulez-vous vraiment supprimer votre avis ?")) return;
+
+        try {
+            const res = await fetch(`${API_URL}/api/users-notes/${userId}/${id}`, {
+                method: "DELETE"
+            });
+
+            if (res.ok) {
+                setUserReview(null);
+                setReviewForm({ note: 10, commentaire: "" });
+                setIsEditingReview(false);
+                alert("Avis supprimé.");
+            } else {
+                alert("Erreur lors de la suppression.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     if (isLoading) return <div className="container mt-5 text-center"><h3>Chargement...</h3></div>;
     if (error || !film) return <div className="container mt-5 text-center text-danger"><h3>{error}</h3></div>;
 
-    // ✅ On formate la moyenne récupérée du backend (qui arrive souvent en string)
     const displayNote = film.moyenne ? parseFloat(film.moyenne).toFixed(1) : null;
 
     return (
@@ -81,10 +152,9 @@ export const MovieDetails = () => {
                     <h1 className="display-4 fw-bold">{film.titre}</h1>
                     
                     <div className="d-flex align-items-center gap-3 my-3">
-                        {/* ✅ AFFICHAGE DE LA NOTE RÉCUPÉRÉE DU BACKEND */}
                         {displayNote ? (
                             <span className="badge bg-warning text-dark fs-5 shadow-sm">
-                                ⭐ {displayNote} / 5
+                                ⭐ {displayNote} / 10
                             </span>
                         ) : (
                             <span className="badge bg-light text-muted fs-6 border">Aucune note</span>
@@ -127,6 +197,65 @@ export const MovieDetails = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <hr className="text-muted my-5" />
+
+            {/* SECTION AVIS */}
+            <div className="mb-5 bg-light p-4 rounded shadow-sm">
+                <h4 className="fw-bold mb-3">Mon Avis</h4>
+
+                {userReview && !isEditingReview ? (
+                    <div>
+                        <p className="fs-5">
+                            <span className="badge bg-warning text-dark me-2">⭐ {userReview.note} / 10</span>
+                        </p>
+                        <p className="lead">{userReview.commentaire || "Aucun commentaire."}</p>
+                        <div className="d-flex gap-2 mt-3">
+                            <button className="btn btn-outline-primary" onClick={() => setIsEditingReview(true)}>
+                                Modifier
+                            </button>
+                            <button className="btn btn-outline-danger" onClick={handleDeleteReview}>
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmitReview}>
+                        <div className="mb-3">
+                            <label className="form-label fw-bold">Note sur 10</label>
+                            <select 
+                                className="form-select w-auto" 
+                                value={reviewForm.note}
+                                onChange={(e) => setReviewForm({...reviewForm, note: parseFloat(e.target.value)})}
+                            >
+                                {[...Array(10)].map((_, i) => (
+                                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label fw-bold">Commentaire</label>
+                            <textarea 
+                                className="form-control" 
+                                rows={3} 
+                                placeholder="Que pensez-vous de ce film ?"
+                                value={reviewForm.commentaire}
+                                onChange={(e) => setReviewForm({...reviewForm, commentaire: e.target.value})}
+                            ></textarea>
+                        </div>
+                        <div className="d-flex gap-2">
+                            <button type="submit" className="btn btn-success">
+                                {userReview ? "Enregistrer les modifications" : "Publier mon avis"}
+                            </button>
+                            {userReview && isEditingReview && (
+                                <button type="button" className="btn btn-secondary" onClick={() => setIsEditingReview(false)}>
+                                    Annuler
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                )}
             </div>
         </div>
     );

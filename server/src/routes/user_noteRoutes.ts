@@ -78,4 +78,8 @@ router.delete("/:user_id/:film_id", checkIdParam, user_noteControllers.deleteUse
 
 router.get("/user/:user_id", user_noteControllers.getNotesByUserId);
 
+router.get("/:user_id/:film_id", checkIdParam, user_noteControllers.getUserNoteForFilm);
+
+router.put("/:user_id/:film_id", checkIdParam, user_noteControllers.updateUser_note);
+
 export default router;
