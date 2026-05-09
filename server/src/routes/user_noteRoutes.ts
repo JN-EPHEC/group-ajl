@@ -76,4 +76,6 @@ router.post("/", user_noteControllers.createUser_note);
  */
 router.delete("/:user_id/:film_id", checkIdParam, user_noteControllers.deleteUser_note);
 
+router.get("/user/:user_id", user_noteControllers.getNotesByUserId);
+
 export default router;

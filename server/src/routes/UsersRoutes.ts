@@ -82,7 +82,7 @@ router.post('/', UserControllers.createUser);
  *       500:
  *         description: Erreur serveur
  */
-router.delete('/:id', checkIdParam, UserControllers.deleteUser);
+router.delete('/:user_id', checkIdParam, UserControllers.deleteUser);
 
 /**
  * @swagger
@@ -106,5 +106,7 @@ router.delete('/:id', checkIdParam, UserControllers.deleteUser);
  *         description: Erreur serveur
  */
 router.delete('/:user_id/watchlist/:film_id', checkIdParam, UserControllers.supprimerFilmDeWatchlist);
+
+router.get("/:user_id", UserControllers.getUserById);
 
 export default router;

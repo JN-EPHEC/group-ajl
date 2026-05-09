@@ -17,7 +17,7 @@ export const Movies = () => {
 
     useEffect(() => {
         // On récupère les films (le backend doit inclure Realisateur et Genres)
-        fetch(`${API_URL}/films`)
+        fetch(`${API_URL}/api/films`)
             .then(res => {
                 if (!res.ok) throw new Error("Erreur lors de la récupération des films");
                 return res.json();
@@ -50,7 +50,8 @@ export const Movies = () => {
         const matchesGenre = genreFilter === "" || 
             movie.Genres?.some((g: any) => g.nom === genreFilter);
 
-        const annee = movie.dateDeSortie ? new Date(movie.dateDeSortie).getFullYear().toString() : "";
+        // ✅ CORRECTION : Utilisation de date_de_sortie
+        const annee = movie.date_de_sortie ? new Date(movie.date_de_sortie).getFullYear().toString() : "";
         const matchesYear = yearFilter === "" || annee.includes(yearFilter);
 
         // On compare avec la moyenne renvoyée par le backend (on force en nombre pour comparer)
@@ -118,9 +119,11 @@ export const Movies = () => {
 
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 {filteredMovies.map(movie => (
-                    <div className="col" key={movie.film_id}>
+                    // ✅ CORRECTION : Utilisation de movie.id_film
+                    <div className="col" key={movie.id_film}>
                         <div className="card h-100 shadow-sm border-0 movie-card-hover">
-                            <Link to={`/films/${movie.film_id}`}>
+                            {/* ✅ CORRECTION : Utilisation de movie.id_film pour les liens */}
+                            <Link to={`/films/${movie.id_film}`}>
                                 <img 
                                     src={movie.img || "https://via.placeholder.com/300x450?text=Pas+d'image"} 
                                     className="card-img-top" 
@@ -130,15 +133,15 @@ export const Movies = () => {
                             </Link>
                             
                             <div className="card-body">
-                                <Link to={`/films/${movie.film_id}`} className="text-decoration-none text-dark">
+                                <Link to={`/films/${movie.id_film}`} className="text-decoration-none text-dark">
                                     <h5 className="card-title text-truncate fw-bold">{movie.titre}</h5>
                                 </Link>
                                 
                                 <p className="card-text text-muted mb-1">
-                                    {movie.dateDeSortie ? new Date(movie.dateDeSortie).getFullYear() : "Année inconnue"}
+                                    {/* ✅ CORRECTION : Utilisation de date_de_sortie */}
+                                    {movie.date_de_sortie ? new Date(movie.date_de_sortie).getFullYear() : "Année inconnue"}
                                 </p>
 
-                                {/* ✅ Correction Réalisateur : Prénom + Nom */}
                                 <p className="card-text small mb-2">
                                     <strong>Réal :</strong> {movie.Realisateur ? `${movie.Realisateur.prenom} ${movie.Realisateur.nom}` : "Inconnu"}
                                 </p>
@@ -146,10 +149,10 @@ export const Movies = () => {
                                 <div className="d-flex justify-content-between align-items-center mt-2">
                                     <div className="d-flex flex-wrap gap-1">
                                         {movie.Genres?.slice(0, 2).map((g: any) => (
-                                            <span key={g.genre_id} className="badge bg-secondary small">{g.nom}</span>
+                                            // ✅ CORRECTION : Utilisation de g.id_genre
+                                            <span key={g.id_genre} className="badge bg-secondary small">{g.nom}</span>
                                         ))}
                                     </div>
-                                    {/* ✅ Correction Note : Affichage de la moyenne formatée */}
                                     <span className="text-warning fw-bold">
                                         ⭐ {movie.moyenne ? Number(movie.moyenne).toFixed(1) : "N/A"}
                                     </span>
@@ -157,7 +160,7 @@ export const Movies = () => {
                             </div>
                             
                             <div className="card-footer bg-white border-top-0 pb-3">
-                                <Link to={`/films/${movie.film_id}`} className="btn btn-outline-dark btn-sm w-100">
+                                <Link to={`/films/${movie.id_film}`} className="btn btn-outline-dark btn-sm w-100">
                                     Voir les détails
                                 </Link>
                             </div>

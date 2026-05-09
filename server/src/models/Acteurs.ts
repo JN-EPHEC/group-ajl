@@ -1,30 +1,17 @@
-import { DataTypes, Model} from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-class Acteur extends Model {}
+const Acteur = sequelize.define('Acteur', {
+  id_acteurs: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  nom: { type: DataTypes.STRING(255), allowNull: false },
+  prenom: { type: DataTypes.STRING(255) }
+}, {
+  tableName: 'acteurs',
+  timestamps: false,
+});
 
-Acteur.init(
-    {
-        //attributs du modèle
-        acteur_id:{
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            autoIncrement: true,
-        },
-        nom: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        prenom: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-    },
-    {
-        //model options
-        sequelize, //connection à l'instance
-        modelName: 'Acteurs', // nom du modèle
-        tableName: 'Acteurs',
-    },
-);
 export default Acteur;

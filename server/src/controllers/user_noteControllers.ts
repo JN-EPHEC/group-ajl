@@ -1,73 +1,93 @@
 import type { Request, Response } from "express";
-import user_note from "../models/Users_notes";
-import User from "../models/Users";
-import Film from "../models/Films";
+import UserNote from "../models/Users_notes.js"; // ✅ Ajout du .js et majuscule pour le modèle
+import User from "../models/Users.js";
+import Film from "../models/Films.js";
 
+// 1. Récupérer toutes les notes
 export const getAllUser_note = async (req: Request, res: Response) => {
     try {
-        const films = await user_note.findAll({
-            include: [{ model: Film, attributes: ['titre'] }] 
+        const notes = await UserNote.findAll({
+            include: [
+                { model: Film, attributes: ['titre'] },
+                { model: User, attributes: ['pseudonyme'] } // Optionnel : pour savoir qui a noté
+            ] 
         });
-        res.status(200).json(films);
+        res.status(200).json(notes);
     } catch (error) {
         res.status(500).json({ error: (error as any).message });
     }
 };
 
+// 2. Créer une note
 export const createUser_note = async (req: Request, res: Response) => {
     try {
-        const { user_id, film_id, note, commentaire } = req.body;
+        const { id_user, id_film, note, commentaire } = req.body;
 
-        const user = await User.findByPk(user_id);
-        if (!user) {
-            return res.status(404).json({
-                error: "Utilisateur introuvable"
-            });
+        // Vérification de l'utilisateur
+        const userExists = await User.findByPk(id_user);
+        if (!userExists) {
+            return res.status(404).json({ error: "Utilisateur introuvable" });
         }
 
-        const film = await Film.findByPk(film_id);
-        if (!film) {
-            return res.status(404).json({
-                error: "Film introuvable"
-            });
+        // Vérification du film
+        const filmExists = await Film.findByPk(id_film);
+        if (!filmExists) {
+            return res.status(404).json({ error: "Film introuvable" });
         }
 
-        const nouvelleNote = await user_note.create({
-            user_id: user_id,
-            film_id: film_id,
+        const nouvelleNote = await UserNote.create({
+            id_user: id_user,
+            id_film: id_film,
             note: note,
             commentaire: commentaire
         });
 
         res.status(201).json(nouvelleNote);
 
-    } catch (error){
-        console.log(error);
-        res.status(500).send("Erreur serveur");
+    } catch (error) {
+        console.error("Erreur dans createUser_note :", error);
+        res.status(500).json({ error: "Erreur serveur lors de la création de la note" });
     }
 };
 
+// 3. Supprimer une note
 export const deleteUser_note = async (req: Request, res: Response) => {
     try {
-        const { user_id, film_id } = req.params;
+        const { id_user, id_film } = req.params;
 
-        const deleted = await user_note.destroy({
+        const deleted = await UserNote.destroy({
             where: {
-                user_id: user_id,
-                film_id: film_id
+                id_user: id_user,
+                id_film: id_film
             }
         });
 
         if (deleted === 0) {
-            return res.status(404).json({
-                error: "Note introuvable"
-            });
+            return res.status(404).json({ error: "Note introuvable" });
         }
 
         res.status(204).send();
 
     } catch (error) {
-        console.log(error);
+        console.error("Erreur dans deleteUser_note :", error);
         res.status(500).send("Erreur serveur");
+    }
+};
+
+export const getNotesByUserId = async (req: Request, res: Response) => {
+    try {
+        // ✅ On cast pour éviter l'erreur TS sur les params
+        const { user_id } = req.params as { user_id: string };
+
+        const notes = await UserNote.findAll({
+            where: { id_user: user_id },
+            include: [
+                { model: Film, attributes: ['titre'] }
+            ]
+        });
+
+        res.status(200).json(notes);
+    } catch (error) {
+        res.status(500).json({ error: "Erreur lors de la récupération des notes" });
     }
 };

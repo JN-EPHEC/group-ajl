@@ -1,35 +1,20 @@
-import { DataTypes, Model} from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-class Genre_film extends Model {}
+const Genres_films = sequelize.define('Genres_films', {
+  id_genre: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: { model: 'genres', key: 'id_genre' }
+  },
+  id_film: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: { model: 'films', key: 'id_film' }
+  }
+}, {
+  tableName: 'genres_films',
+  timestamps: false,
+});
 
-Genre_film.init(
-    {
-        //attributs du modèle
-        genre_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            references: {
-                model: 'Genres',
-                key: 'genre_id',
-            }
-        },
-        film_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            references: {
-                model: 'Films',
-                key: 'film_id',
-            }
-        },
-    },
-    {
-        //model options
-        sequelize, //connection à l'instance
-        modelName: 'Genres_films', // nom du modèle
-        tableName: 'Genres_films',
-    },
-);
-export default Genre_film;
+export default Genres_films;

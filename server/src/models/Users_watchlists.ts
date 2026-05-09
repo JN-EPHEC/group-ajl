@@ -1,39 +1,24 @@
-import { DataTypes, Model} from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
-class User_watchlist extends Model {}
+const Users_watchlist = sequelize.define('Users_watchlist', {
+  id_user: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: { model: 'users', key: 'id_user' }
+  },
+  id_film: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    references: { model: 'films', key: 'id_film' }
+  },
+  date_ajout: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  }
+}, {
+  tableName: 'users_watchlists',
+  timestamps: false,
+});
 
-User_watchlist.init(
-    {
-        //attributs du modèle
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            references: {
-                model: 'Users',
-                key: 'user_id',
-            }
-        },
-        film_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            references: {
-                model: 'Films',
-                key: 'film_id',
-            }
-        },
-        date_ajout: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
-    },
-    {
-        //model options
-        sequelize, //connection à l'instance
-        modelName: 'Users_watchlist', // nom du modèle
-        tableName: 'Users_watchlist',
-    },
-);
-export default User_watchlist;
+export default Users_watchlist;

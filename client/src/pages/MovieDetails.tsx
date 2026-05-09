@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import '../index.css';
 
 export const MovieDetails = () => {
-    const { id } = useParams(); // Récupère l'ID du film dans l'URL
-    const [movie, setMovie] = useState<any>(null);
+    const { id } = useParams<{ id: string }>();
+    const [film, setFilm] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAdding, setIsAdding] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [feedback, setFeedback] = useState<{ type: string, msg: string } | null>(null);
 
     const API_URL = import.meta.env.VITE_API_URL;
+    const userId = 1;
 
     useEffect(() => {
-        fetch(`${API_URL}/films/${id}`)
+        fetch(`${API_URL}/api/films/${id}`)
             .then(res => {
-                if (!res.ok) throw new Error("Impossible de charger les détails du film");
+                if (!res.ok) throw new Error("Film introuvable");
                 return res.json();
             })
             .then(data => {
-                setMovie(data);
+                setFilm(data);
                 setIsLoading(false);
             })
             .catch(err => {
@@ -25,81 +29,101 @@ export const MovieDetails = () => {
             });
     }, [id, API_URL]);
 
-    if (isLoading) return <div className="container mt-5 text-center"><h4>Chargement...</h4></div>;
-    if (error || !movie) return <div className="container mt-5 text-center text-danger"><h4>{error || "Film non trouvé"}</h4></div>;
+    const handleAddToWatchlist = async () => {
+        setIsAdding(true);
+        setFeedback(null);
+        try {
+            const response = await fetch(`${API_URL}/api/users/${userId}/watchlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_film: parseInt(id || '0') })
+            });
+            if (response.ok) {
+                setFeedback({ type: 'success', msg: 'Ajouté à votre liste ! 🍿' });
+            } else {
+                setFeedback({ type: 'warning', msg: 'Déjà dans votre liste.' });
+            }
+        } catch (err) {
+            setFeedback({ type: 'danger', msg: 'Erreur lors de l\'ajout.' });
+        } finally {
+            setIsAdding(false);
+        }
+    };
+
+    if (isLoading) return <div className="container mt-5 text-center"><h3>Chargement...</h3></div>;
+    if (error || !film) return <div className="container mt-5 text-center text-danger"><h3>{error}</h3></div>;
+
+    // ✅ On formate la moyenne récupérée du backend (qui arrive souvent en string)
+    const displayNote = film.moyenne ? parseFloat(film.moyenne).toFixed(1) : null;
 
     return (
         <div className="container mt-5">
-            <Link to="/films" className="btn btn-outline-dark mb-4">
-                ← Retour au catalogue
-            </Link>
+            <Link to="/films" className="btn btn-outline-secondary mb-4">← Retour</Link>
 
-            <div className="row g-5">
-                {/* Colonne de gauche : Affiche */}
-                <div className="col-md-4">
-                    <img 
-                        src={movie.img || "https://via.placeholder.com/400x600?text=Pas+d'image"} 
-                        className="img-fluid rounded-4 shadow-lg" 
-                        alt={movie.titre} 
-                    />
+            <div className="row">
+                {/* Colonne Affiche */}
+                <div className="col-md-4 mb-4">
+                    <img src={film.img} alt={film.titre} className="img-fluid rounded shadow-lg w-100" />
+                    <div className="mt-4">
+                        <button 
+                            onClick={handleAddToWatchlist}
+                            disabled={isAdding}
+                            className={`btn btn-lg w-100 ${feedback?.type === 'success' ? 'btn-success' : 'btn-primary'}`}
+                        >
+                            {isAdding ? 'Ajout...' : '➕ Ma Watchlist'}
+                        </button>
+                        {feedback && <div className={`alert alert-${feedback.type} mt-2 py-2 small text-center`}>{feedback.msg}</div>}
+                    </div>
                 </div>
 
-                {/* Colonne de droite : Informations détaillées */}
-                <div className="col-md-8">
-                    <h1 className="display-4 fw-bold mb-2">{movie.titre}</h1>
+                {/* Colonne Infos */}
+                <div className="col-md-8 px-4">
+                    <h1 className="display-4 fw-bold">{film.titre}</h1>
                     
-                    <div className="d-flex align-items-center gap-3 mb-4">
-                        <span className="badge bg-secondary px-3 py-2">
-                            {movie.dateDeSortie ? new Date(movie.dateDeSortie).getFullYear() : "Année inconnue"}
-                        </span>
-                        <span className="text-muted">
-                            {movie.duree_minute} minutes
-                        </span>
-                        <div className="text-warning fw-bold">
-                            {/* Dans ton MovieDetails.tsx */}
-                            <div className="text-warning fw-bold fs-4">
-                                ⭐ {movie.moyenne ? Number(movie.moyenne).toFixed(1) : "N/A"} / 5
-                            </div>
-                        </div>
+                    <div className="d-flex align-items-center gap-3 my-3">
+                        {/* ✅ AFFICHAGE DE LA NOTE RÉCUPÉRÉE DU BACKEND */}
+                        {displayNote ? (
+                            <span className="badge bg-warning text-dark fs-5 shadow-sm">
+                                ⭐ {displayNote} / 5
+                            </span>
+                        ) : (
+                            <span className="badge bg-light text-muted fs-6 border">Aucune note</span>
+                        )}
+                        
+                        <span className="badge bg-primary fs-6">{new Date(film.date_de_sortie).getFullYear()}</span>
+                        <span className="badge bg-secondary fs-6">{film.duree} min</span>
                     </div>
 
-                    <h5 className="text-uppercase text-muted small fw-bold">Réalisateur</h5>
-                    <p className="fs-5 mb-4">
-                        {movie.Realisateur ? `${movie.Realisateur.prenom} ${movie.Realisateur.nom}` : "Inconnu"}
-                    </p>
-
-                    {/* SECTION SYNOPSIS */}
-                    <h5 className="text-uppercase text-muted small fw-bold">Synopsis</h5>
-                    <p className="fs-5 lh-base mb-4">
-                        {movie.synopsis || "Aucun résumé n'est disponible pour ce film."}
-                    </p>
-
-                    {/* SECTION GENRES */}
-                    <div className="mb-5">
-                        {movie.Genres?.map((genre: any) => (
-                            <span key={genre.nom} className="badge rounded-pill border border-dark text-dark me-2 px-3 py-2">
-                                {genre.nom}
+                    <div className="mb-3">
+                        {film.Genres?.map((g: any) => (
+                            <span key={g.id_genre} className="badge bg-info text-dark me-2 fs-6">
+                                {g.nom}
                             </span>
                         ))}
                     </div>
 
-                    {/* SECTION ACTEURS (Casting) */}
-                    <div className="border-top pt-4">
-                        <h5 className="text-uppercase text-muted small fw-bold mb-3">Casting principal</h5>
-                        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                            {movie.Acteurs && movie.Acteurs.length > 0 ? (
-                                movie.Acteurs.map((acteur: any) => (
-                                    <div className="col" key={acteur.nom + acteur.prenom}>
-                                        <div className="card h-100 border-0 bg-light shadow-sm">
-                                            <div className="card-body p-3">
-                                                <p className="card-text mb-0 fw-bold">{acteur.prenom} {acteur.nom}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-muted small italic">Aucun acteur renseigné pour ce film.</p>
-                            )}
+                    <hr className="text-muted" />
+
+                    <div className="mb-4">
+                        <h5 className="text-uppercase text-muted small fw-bold">Réalisé par</h5>
+                        <p className="fs-5">
+                            {film.Realisateur ? `${film.Realisateur.prenom} ${film.Realisateur.nom}` : "Inconnu"}
+                        </p>
+                    </div>
+
+                    <div className="mb-4">
+                        <h5 className="text-uppercase text-muted small fw-bold">Synopsis</h5>
+                        <p className="lead">{film.description}</p>
+                    </div>
+
+                    <div className="mb-4">
+                        <h5 className="text-uppercase text-muted small fw-bold">Distribution</h5>
+                        <div className="d-flex flex-wrap gap-2">
+                            {film.Acteurs?.map((a: any) => (
+                                <span key={a.id_acteurs} className="border p-2 rounded bg-white shadow-sm">
+                                    👤 {a.prenom} {a.nom}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>
