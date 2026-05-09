@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import '../index.css';
 
+interface UserReview {
+    id_user: number;
+    id_film: number;
+    note: number;
+    commentaire: string;
+    User?: { pseudonyme: string }; // Inclus par le backend
+}
+
 export const MovieDetails = () => {
     const { id } = useParams<{ id: string }>();
     const [film, setFilm] = useState<any>(null);
@@ -10,16 +18,31 @@ export const MovieDetails = () => {
     const [error, setError] = useState<string | null>(null);
     const [feedback, setFeedback] = useState<{ type: string, msg: string } | null>(null);
 
-    // États pour gérer l'avis de l'utilisateur
-    const [userReview, setUserReview] = useState<{ note: number | string, commentaire: string } | null>(null);
+    // États pour l'avis de l'utilisateur connecté
+    const [userReview, setUserReview] = useState<UserReview | null>(null);
     const [reviewForm, setReviewForm] = useState({ note: 10, commentaire: "" });
     const [isEditingReview, setIsEditingReview] = useState(false);
 
-    const API_URL = import.meta.env.VITE_API_URL;
-    const userId = 1; // ID temporaire
+    // --- NOUVEL ÉTAT : Tous les avis du film ---
+    const [allReviews, setAllReviews] = useState<UserReview[]>([]);
+
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    
+    const userId = localStorage.getItem("user_id");
+    const token = localStorage.getItem("token");
+
+    // Fonction isolée pour recharger tous les avis facilement
+    const fetchAllReviews = () => {
+        fetch(`${API_URL}/api/users-notes/film/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) setAllReviews(data);
+            })
+            .catch(err => console.error("Erreur récupération de tous les avis", err));
+    };
 
     useEffect(() => {
-        // 1. Récupérer les détails du film
+        // 1. REQUÊTE PUBLIQUE : Détails du film
         fetch(`${API_URL}/api/films/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("Film introuvable");
@@ -34,28 +57,47 @@ export const MovieDetails = () => {
                 setIsLoading(false);
             });
 
-        // 2. Récupérer l'avis de l'utilisateur s'il existe (Route : users-notes)
-        fetch(`${API_URL}/api/users-notes/${userId}/${id}`)
-            .then(res => {
-                if (res.ok) return res.json();
-                return null;
-            })
-            .then(data => {
-                if (data) {
-                    setUserReview(data);
-                    setReviewForm({ note: data.note, commentaire: data.commentaire || "" });
+        // 2. REQUÊTE PRIVÉE : Avis personnel (uniquement si connecté)
+        if (userId && token) {
+            fetch(`${API_URL}/api/users-notes/${userId}/${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 }
             })
-            .catch(err => console.error("Erreur récupération avis", err));
-    }, [id, API_URL]);
+                .then(res => {
+                    if (res.ok) return res.json();
+                    return null;
+                })
+                .then(data => {
+                    if (data) {
+                        setUserReview(data);
+                        setReviewForm({ note: data.note, commentaire: data.commentaire || "" });
+                    }
+                })
+                .catch(err => console.error("Erreur récupération avis", err));
+        }
 
+        // 3. REQUÊTE PUBLIQUE : Tous les avis des spectateurs
+        fetchAllReviews();
+    }, [id, API_URL, userId, token]);
+
+    // Ajouter à la Watchlist
     const handleAddToWatchlist = async () => {
+        if (!userId || !token) {
+            alert("Veuillez vous connecter pour ajouter un film à votre watchlist.");
+            return;
+        }
         setIsAdding(true);
         setFeedback(null);
         try {
             const response = await fetch(`${API_URL}/api/users/${userId}/watchlist`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ id_film: parseInt(id || '0') })
             });
             if (response.ok) {
@@ -70,8 +112,11 @@ export const MovieDetails = () => {
         }
     };
 
+    // Publier / Modifier un avis
     const handleSubmitReview = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!userId || !token) return;
+
         const method = userReview ? "PUT" : "POST";
         const url = userReview 
             ? `${API_URL}/api/users-notes/${userId}/${id}` 
@@ -79,12 +124,15 @@ export const MovieDetails = () => {
 
         const bodyData = userReview 
             ? { note: reviewForm.note, commentaire: reviewForm.commentaire } 
-            : { id_user: userId, id_film: parseInt(id || '0'), note: reviewForm.note, commentaire: reviewForm.commentaire };
+            : { id_user: parseInt(userId), id_film: parseInt(id || '0'), note: reviewForm.note, commentaire: reviewForm.commentaire };
 
         try {
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(bodyData)
             });
 
@@ -93,6 +141,8 @@ export const MovieDetails = () => {
                 setUserReview(updatedReview);
                 setIsEditingReview(false);
                 alert(userReview ? "Avis modifié avec succès !" : "Avis ajouté !");
+                // On recharge la liste générale pour y voir notre nouvel avis
+                fetchAllReviews();
             } else {
                 alert("Erreur lors de l'enregistrement de l'avis.");
             }
@@ -101,12 +151,15 @@ export const MovieDetails = () => {
         }
     };
 
+    // Supprimer un avis
     const handleDeleteReview = async () => {
+        if (!userId || !token) return;
         if (!window.confirm("Voulez-vous vraiment supprimer votre avis ?")) return;
 
         try {
             const res = await fetch(`${API_URL}/api/users-notes/${userId}/${id}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (res.ok) {
@@ -114,6 +167,8 @@ export const MovieDetails = () => {
                 setReviewForm({ note: 10, commentaire: "" });
                 setIsEditingReview(false);
                 alert("Avis supprimé.");
+                // On met à jour la liste globale
+                fetchAllReviews();
             } else {
                 alert("Erreur lors de la suppression.");
             }
@@ -136,14 +191,22 @@ export const MovieDetails = () => {
                 <div className="col-md-4 mb-4">
                     <img src={film.img} alt={film.titre} className="img-fluid rounded shadow-lg w-100" />
                     <div className="mt-4">
-                        <button 
-                            onClick={handleAddToWatchlist}
-                            disabled={isAdding}
-                            className={`btn btn-lg w-100 ${feedback?.type === 'success' ? 'btn-success' : 'btn-primary'}`}
-                        >
-                            {isAdding ? 'Ajout...' : '➕ Ma Watchlist'}
-                        </button>
-                        {feedback && <div className={`alert alert-${feedback.type} mt-2 py-2 small text-center`}>{feedback.msg}</div>}
+                        {userId ? (
+                            <>
+                                <button 
+                                    onClick={handleAddToWatchlist}
+                                    disabled={isAdding}
+                                    className={`btn btn-lg w-100 ${feedback?.type === 'success' ? 'btn-success' : 'btn-primary'}`}
+                                >
+                                    {isAdding ? 'Ajout...' : '➕ Ma Watchlist'}
+                                </button>
+                                {feedback && <div className={`alert alert-${feedback.type} mt-2 py-2 small text-center`}>{feedback.msg}</div>}
+                            </>
+                        ) : (
+                            <div className="alert alert-info text-center small">
+                                <Link to="/login" className="fw-bold">Connectez-vous</Link> pour ajouter ce film à votre Watchlist.
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -201,11 +264,15 @@ export const MovieDetails = () => {
 
             <hr className="text-muted my-5" />
 
-            {/* SECTION AVIS */}
+            {/* SECTION "MON AVIS" */}
             <div className="mb-5 bg-light p-4 rounded shadow-sm">
                 <h4 className="fw-bold mb-3">Mon Avis</h4>
 
-                {userReview && !isEditingReview ? (
+                {!userId ? (
+                    <p className="text-muted mb-0">
+                        Vous devez être <Link to="/login" className="text-decoration-none fw-bold">connecté</Link> pour laisser un avis sur ce film.
+                    </p>
+                ) : userReview && !isEditingReview ? (
                     <div>
                         <p className="fs-5">
                             <span className="badge bg-warning text-dark me-2">⭐ {userReview.note} / 10</span>
@@ -255,6 +322,42 @@ export const MovieDetails = () => {
                             )}
                         </div>
                     </form>
+                )}
+            </div>
+
+            {/* --- NOUVELLE SECTION : TOUS LES AVIS DES SPECTATEURS --- */}
+            <div className="mb-5">
+                <h4 className="fw-bold mb-4">💬 Avis des spectateurs ({allReviews.length})</h4>
+                
+                {allReviews.length === 0 ? (
+                    <p className="text-muted">Aucun avis n'a été publié pour ce film. Soyez le premier à donner votre avis !</p>
+                ) : (
+                    <div className="d-flex flex-column gap-3">
+                        {allReviews.map((review) => (
+                            <div key={`${review.id_user}-${review.id_film}`} className="card border-0 shadow-sm p-3">
+                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                    <div className="d-flex align-items-center gap-2">
+                                        <div className="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: '35px', height: '35px', fontSize: '0.9rem' }}>
+                                            {review.User?.pseudonyme?.charAt(0).toUpperCase() || "?"}
+                                        </div>
+                                        <span className="fw-bold text-dark">
+                                            {review.User?.pseudonyme || "Utilisateur anonyme"}
+                                        </span>
+                                        {/* Badge spécial si c'est notre avis */}
+                                        {parseInt(userId || "0") === review.id_user && (
+                                            <span className="badge bg-secondary ms-1 small">Moi</span>
+                                        )}
+                                    </div>
+                                    <span className="badge bg-warning text-dark fs-6">
+                                        ⭐ {review.note} / 10
+                                    </span>
+                                </div>
+                                <p className="mb-0 text-muted small-text-italic">
+                                    {review.commentaire || <span className="text-muted fst-italic">Sans commentaire</span>}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

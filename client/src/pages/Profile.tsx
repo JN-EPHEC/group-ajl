@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Watchlist } from './Watchlist';
 import '../index.css';
 
@@ -7,14 +8,39 @@ export const Profile = () => {
     const [notes, setNotes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     
-    const API_URL = import.meta.env.VITE_API_URL;
-    const userId = 1;
+    // Hook pour rediriger vers le login si besoin
+    const navigate = useNavigate();
+    
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
     useEffect(() => {
-        // Chargement simultané des infos et des notes
-        const fetchUser = fetch(`${API_URL}/api/users/${userId}`).then(res => res.json());
+        // 1. Récupération de l'ID dynamique et du token depuis le stockage du navigateur
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+
+        // Redirection de sécurité si l'utilisateur n'est pas connecté
+        if (!token || !userId) {
+            navigate("/login");
+            return;
+        }
+
+        // Configuration du header avec le badge d'accès (token)
+        const fetchOptions = {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        };
+
+        // 2. Chargement simultané des infos et des notes avec les options sécurisées
+        const fetchUser = fetch(`${API_URL}/api/users/${userId}`, fetchOptions)
+            .then(res => {
+                if (!res.ok) throw new Error("Erreur d'authentification ou profil introuvable");
+                return res.json();
+            });
         
-        const fetchNotes = fetch(`${API_URL}/api/users-notes/user/${userId}`).then(res => res.json());
+        const fetchNotes = fetch(`${API_URL}/api/users-notes/user/${userId}`, fetchOptions)
+            .then(res => res.json());
 
         Promise.all([fetchUser, fetchNotes])
             .then(([userData, notesData]) => {
@@ -24,11 +50,20 @@ export const Profile = () => {
             })
             .catch(err => {
                 console.error("Erreur Profil:", err);
-                setIsLoading(false);
+                // Si la requête échoue (ex: token expiré), on nettoie et on redirige
+                localStorage.removeItem("token");
+                localStorage.removeItem("user_id");
+                navigate("/login");
             });
-    }, [API_URL]);
+    }, [API_URL, navigate]);
 
-    if (isLoading) return <div className="container mt-5 text-center text-white"><h3>Chargement du profil...</h3></div>;
+    // Fonction pratique pour se déconnecter manuellement
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = "/login";
+    };
+
+    if (isLoading) return <div className="container mt-5 text-center"><h3>Chargement du profil...</h3></div>;
 
     return (
         <div className="container mt-4">
@@ -41,7 +76,11 @@ export const Profile = () => {
                             {user?.pseudonyme?.charAt(0).toUpperCase()}
                         </div>
                         <h3 className="fw-bold mb-1 text-dark">{user?.pseudonyme}</h3>
-                        <p className="text-muted small">{user?.mail}</p>
+                        <p className="text-muted small mb-3">{user?.mail}</p>
+                        
+                        <button onClick={handleLogout} className="btn btn-outline-danger btn-sm w-100">
+                            Se déconnecter
+                        </button>
                     </div>
 
                     {/* SECTION NOTES ⭐ */}
@@ -55,7 +94,7 @@ export const Profile = () => {
                                             <span className="fw-bold small">{n.Film?.titre}</span>
                                         </div>
                                         <span className="badge bg-warning text-dark">
-                                            {n.note}/5
+                                            {n.note}/10
                                         </span>
                                     </div>
                                 ))}
@@ -68,8 +107,8 @@ export const Profile = () => {
 
                 {/* --- DROITE : WATCHLIST --- */}
                 <div className="col-md-8">
-                    <div className="card shadow-sm border-0 p-4">
-                        <h2 className="mb-4">Ma Watchlist</h2>
+                    <div className="card shadow-sm border-0 p-4 h-100">
+                        {/* J'ai retiré le titre "Ma Watchlist" car le composant Watchlist.tsx génère déjà le sien ! */}
                         <Watchlist />
                     </div>
                 </div>

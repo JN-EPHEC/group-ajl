@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import Users_watchlist from "../models/Users_watchlists.js";
 import Users from "../models/Users.js";
 import Film from "../models/Films.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 // 1. Récupérer tous les utilisateurs
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -13,18 +15,22 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 };
 
-// 2. Créer un utilisateur
+// 2. Créer un utilisateur (Inscription)
 export const createUser = async (req: Request, res: Response) => {
     try {
         const { pseudonyme, mail, password } = req.body;
+        
+        // On hache le mot de passe avant l'insertion
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         const newUser = await Users.create({
             pseudonyme,
             mail,
-            password_hash: password 
+            password_hash: hashedPassword // On enregistre le hash, pas le texte clair
         });
         res.status(201).json(newUser);
     } catch (error) {
-        console.error("Erreur création utilisateur :", error);
         res.status(500).json({ error: "Erreur lors de la création de l'utilisateur" });
     }
 };
@@ -116,7 +122,6 @@ export const supprimerFilmDeWatchlist = async (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
     try {
-        // ✅ On force le type pour enlever le soulignement rouge
         const { user_id } = req.params as { user_id: string }; 
 
         if (!user_id) {
@@ -137,3 +142,39 @@ export const getUserById = async (req: Request, res: Response) => {
     }
 };
 
+// Fonction de connexion
+export const loginUser = async (req: Request, res: Response) => {
+    try {
+        const { mail, password } = req.body;
+
+        // 1. Chercher l'utilisateur par son mail
+        const user = await Users.findOne({ where: { mail } });
+        if (!user) {
+            return res.status(401).json({ error: "Email ou mot de passe incorrect." });
+        }
+
+        const userData = user as any; 
+
+        // 2. Vérifier si le mot de passe correspond au hachage
+        const validPassword = await bcrypt.compare(password, userData.password_hash);
+        if (!validPassword) {
+            return res.status(401).json({ error: "Email ou mot de passe incorrect." });
+        }
+
+        // 3. Générer le JWT
+        const token = jwt.sign(
+            { id_user: userData.id_user }, 
+            process.env.JWT_SECRET || "MON_SECRET_JWT", 
+            { expiresIn: "24h" }
+        );
+
+        res.status(200).json({ 
+            message: "Connexion réussie", 
+            token, 
+            user_id: userData.id_user 
+        });
+        
+    } catch (error) {
+        res.status(500).json({ error: "Erreur serveur lors de la connexion" });
+    }
+};

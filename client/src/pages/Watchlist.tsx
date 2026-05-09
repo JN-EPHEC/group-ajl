@@ -1,97 +1,143 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../index.css';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+// Définition de la structure des données reçues depuis votre backend
+interface WatchlistItem {
+    id_user: number;
+    id_film: number;
+    date_ajout: string;
+    // Votre backend inclut le modèle Film grâce à la relation Sequelize
+    Film: {
+        id_film: number;
+        titre: string;
+        img: string;
+        date_de_sortie: string;
+    };
+}
 
 export const Watchlist = () => {
-    const [watchlist, setWatchlist] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
+    
+    const navigate = useNavigate();
 
-    // ✅ On utilise l'ID 1 pour tes tests actuels
-    const userId = 1; 
-    const API_URL = import.meta.env.VITE_API_URL;
-
+    // 1. Récupération de la watchlist au chargement de la page
     useEffect(() => {
-        // ✅ URL CORRIGÉE : Correspond au router.get("/:user_id/watchlist")
-        fetch(`${API_URL}/api/users/${userId}/watchlist`)
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(`Erreur ${res.status} : Impossible de récupérer la liste`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                setWatchlist(data);
-                setIsLoading(false);
-            })
-            .catch(err => {
-                setError(err.message);
-                setIsLoading(false);
-            });
-    }, [API_URL, userId]);
+        fetchWatchlist();
+    }, []);
 
-    // Fonction pour supprimer un film de la liste
-    const handleRemove = (filmId: number) => {
-        // ✅ URL CORRIGÉE : Correspond au router.delete("/:user_id/watchlist/:film_id")
-        fetch(`${API_URL}/api/users/${userId}/watchlist/${filmId}`, {
-            method: 'DELETE'
-        }).then(res => {
-            if (res.ok) {
-                // Mise à jour locale pour éviter de recharger la page
-                setWatchlist(watchlist.filter(item => item.id_film !== filmId));
+    const fetchWatchlist = async () => {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+
+        if (!token || !userId) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/users/${userId}/watchlist`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` // On envoie le token ici
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setWatchlist(data);
+            } else if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user_id");
+                navigate("/login");
             } else {
-                alert("Erreur lors de la suppression");
+                setError("Erreur lors de la récupération de la watchlist.");
             }
-        }).catch(err => console.error("Erreur delete:", err));
+        } catch (err) {
+            setError("Impossible de se connecter au serveur.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    if (isLoading) return <div className="container mt-4 text-center"><h4>Chargement de votre liste...</h4></div>;
-    if (error) return <div className="container mt-4 text-danger text-center"><h4>Erreur : {error}</h4></div>;
+    // 2. Fonction pour supprimer un film de la watchlist
+    const handleRemoveFilm = async (filmId: number) => {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/users/${userId}/watchlist/${filmId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 204) {
+                // Succès : on met à jour l'affichage en retirant le film supprimé
+                setWatchlist(watchlist.filter(item => item.id_film !== filmId));
+            } else {
+                alert("Erreur lors de la suppression du film.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    if (loading) return <div className="container mt-5 text-center">Chargement...</div>;
 
     return (
-        <div className="container mt-4">
-            <h1 className="mb-4">Ma Liste à Voir 🍿</h1>
+        <div className="container mt-5">
+            <h2 className="mb-4">Ma Watchlist</h2>
             
-            <div className="row">
-                {watchlist.length > 0 ? (
-                    watchlist.map((item) => (
-                        <div className="col-md-3 mb-4" key={`${item.id_user}-${item.id_film}`}>
-                            <div className="card h-100 shadow-sm border-0">
-                                {/* ✅ On accède aux infos via item.Film à cause du "include" Sequelize */}
-                                <img 
-                                    src={item.Film?.img || "https://via.placeholder.com/300x450?text=Pas+d'image"} 
-                                    className="card-img-top" 
-                                    alt={item.Film?.titre} 
-                                    style={{ height: '350px', objectFit: 'cover' }}
-                                />
+            {error && <div className="alert alert-danger">{error}</div>}
+
+            {watchlist.length === 0 && !error ? (
+                <div className="alert alert-info">Votre watchlist est vide pour le moment.</div>
+            ) : (
+                <div className="row">
+                    {watchlist.map((item) => (
+                        <div className="col-md-3 mb-4" key={item.id_film}>
+                            <div className="card h-100 shadow-sm">
+                                {/* Affichage de l'image du film */}
+                                {item.Film.img ? (
+                                    <img 
+                                        src={item.Film.img} 
+                                        className="card-img-top" 
+                                        alt={item.Film.titre} 
+                                        style={{ height: "350px", objectFit: "cover" }}
+                                    />
+                                ) : (
+                                    <div className="card-img-top bg-secondary d-flex align-items-center justify-content-center" style={{ height: "350px" }}>
+                                        <span className="text-white">Pas d'image</span>
+                                    </div>
+                                )}
+                                
                                 <div className="card-body d-flex flex-column">
-                                    <h5 className="card-title fw-bold">{item.Film?.titre || "Titre inconnu"}</h5>
-                                    <p className="card-text text-muted small mt-auto">
-                                        Ajouté le : {new Date(item.date_ajout).toLocaleDateString()}
+                                    <h5 className="card-title">{item.Film.titre}</h5>
+                                    <p className="card-text text-muted small">
+                                        Sortie : {new Date(item.Film.date_de_sortie).toLocaleDateString("fr-FR")}
                                     </p>
-                                    <div className="d-flex justify-content-between gap-2 mt-2">
-                                        <Link to={`/films/${item.id_film}`} className="btn btn-sm btn-primary flex-grow-1">
-                                            Détails
+                                    
+                                    <div className="mt-auto d-flex flex-column gap-2">
+                                        <Link to={`/films/${item.id_film}`} className="btn btn-outline-primary btn-sm">
+                                            Voir les détails
                                         </Link>
                                         <button 
-                                            onClick={() => handleRemove(item.id_film)}
-                                            className="btn btn-sm btn-outline-danger"
-                                            title="Retirer de la liste"
+                                            onClick={() => handleRemoveFilm(item.id_film)} 
+                                            className="btn btn-outline-danger btn-sm"
                                         >
-                                            Effacer
+                                            Retirer
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    ))
-                ) : (
-                    <div className="text-center py-5">
-                        <p className="text-muted fs-5">Votre watchlist est vide.</p>
-                        <Link to="/films" className="btn btn-primary">Parcourir les films</Link>
-                    </div>
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

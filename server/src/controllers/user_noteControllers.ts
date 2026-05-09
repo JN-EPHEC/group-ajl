@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import UserNote from "../models/Users_notes.js"; // ✅ Ajout du .js et majuscule pour le modèle
+import UserNote from "../models/Users_notes.js"; 
 import User from "../models/Users.js";
 import Film from "../models/Films.js";
 
@@ -74,9 +74,9 @@ export const deleteUser_note = async (req: Request, res: Response) => {
     }
 };
 
+// 4. Récupérer les notes par ID utilisateur
 export const getNotesByUserId = async (req: Request, res: Response) => {
     try {
-        // ✅ On cast pour éviter l'erreur TS sur les params
         const { user_id } = req.params as { user_id: string };
 
         const notes = await UserNote.findAll({
@@ -99,13 +99,14 @@ export const getUserNoteForFilm = async (req: Request, res: Response) => {
         const note = await UserNote.findOne({
             where: { id_user: user_id, id_film: film_id }
         });
-        
+
         if (!note) {
-            return res.status(404).json({ message: "Aucune note trouvée" });
+            return res.status(200).json(null); 
         }
-        res.status(200).json(note);
+
+        return res.status(200).json(note);
     } catch (error) {
-        res.status(500).json({ error: "Erreur lors de la récupération de la note" });
+        return res.status(500).json({ error: "Erreur serveur" });
     }
 };
 
@@ -132,5 +133,27 @@ export const updateUser_note = async (req: Request, res: Response) => {
     } catch (error) {
         console.error("Erreur dans updateUser_note :", error);
         res.status(500).json({ error: "Erreur serveur lors de la modification" });
+    }
+};
+
+// --- 7. Récupérer TOUS les avis pour un film spécifique ---
+export const getNotesForFilm = async (req: Request, res: Response) => {
+    try {
+        const { film_id } = req.params;
+
+        const notes = await UserNote.findAll({
+            where: { id_film: film_id },
+            include: [{
+                model: User,
+                attributes: ['pseudonyme'] 
+            }],
+
+            order: [['id_user', 'DESC']] 
+        });
+
+        res.status(200).json(notes);
+    } catch (error) {
+        console.error("Erreur dans getNotesForFilm :", error);
+        res.status(500).json({ error: "Erreur lors de la récupération des avis" });
     }
 };
