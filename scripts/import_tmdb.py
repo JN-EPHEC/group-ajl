@@ -35,7 +35,7 @@ with engine.begin() as conn:
         # https://developer.themoviedb.org/reference/movie-popular-list
         # -------------------------
         response = requests.get(
-            "https://api.themoviedb.org/3/movie/popular",
+            "https://api.themoviedb.org/3/movie/top_rated",
             headers=headers,
             params={"page": page}
         )
