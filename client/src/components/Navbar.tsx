@@ -8,6 +8,7 @@ export const Navbar = () => {
 
     // Fonction pour basculer l'état
     const toggleMenu = () => {
+        console.log("Le bouton a bien été cliqué !"); 
         setIsMenuOpen(!isMenuOpen);
     };
 
@@ -23,6 +24,7 @@ export const Navbar = () => {
                 <Link className="navbar-brand fw-bold" to="/films" onClick={closeMenu}>
                     🎬 MyMovieApp
                 </Link>
+
 
                 {/* Bouton pour mobile : Remplacement des data-bs-* par un onClick React */}
                 <button 
