@@ -6,6 +6,7 @@ interface LoginProps {
     onLoginSuccess: () => void;
 }
 
+
 export const Login = ({ onLoginSuccess }: LoginProps) => {
     // États pour gérer les champs du formulaire et les messages d'erreur
     const [mail, setMail] = useState("");
@@ -15,6 +16,8 @@ export const Login = ({ onLoginSuccess }: LoginProps) => {
     
     const navigate = useNavigate();
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
@@ -22,7 +25,7 @@ export const Login = ({ onLoginSuccess }: LoginProps) => {
 
         try {
             // Appel à votre route de connexion backend
-            const response = await fetch("http://localhost:3000/api/users/login", {
+            const response = await fetch(`${API_URL}/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 // Le backend attend "mail" et "password"

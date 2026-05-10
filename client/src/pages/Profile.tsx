@@ -11,7 +11,7 @@ export const Profile = () => {
     // Hook pour rediriger vers le login si besoin
     const navigate = useNavigate();
     
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const API_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         // 1. Récupération de l'ID dynamique et du token depuis le stockage du navigateur
@@ -33,13 +33,13 @@ export const Profile = () => {
         };
 
         // 2. Chargement simultané des infos et des notes avec les options sécurisées
-        const fetchUser = fetch(`${API_URL}/api/users/${userId}`, fetchOptions)
+        const fetchUser = fetch(`${API_URL}/users/${userId}`, fetchOptions)
             .then(res => {
                 if (!res.ok) throw new Error("Erreur d'authentification ou profil introuvable");
                 return res.json();
             });
         
-        const fetchNotes = fetch(`${API_URL}/api/users-notes/user/${userId}`, fetchOptions)
+        const fetchNotes = fetch(`${API_URL}/users-notes/user/${userId}`, fetchOptions)
             .then(res => res.json());
 
         Promise.all([fetchUser, fetchNotes])

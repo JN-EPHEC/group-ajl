@@ -26,14 +26,14 @@ export const MovieDetails = () => {
     // --- NOUVEL ÉTAT : Tous les avis du film ---
     const [allReviews, setAllReviews] = useState<UserReview[]>([]);
 
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const API_URL = import.meta.env.VITE_API_URL;
     
     const userId = localStorage.getItem("user_id");
     const token = localStorage.getItem("token");
 
     // Fonction isolée pour recharger tous les avis facilement
     const fetchAllReviews = () => {
-        fetch(`${API_URL}/api/users-notes/film/${id}`)
+        fetch(`${API_URL}/users-notes/film/${id}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setAllReviews(data);
@@ -43,7 +43,7 @@ export const MovieDetails = () => {
 
     useEffect(() => {
         // 1. REQUÊTE PUBLIQUE : Détails du film
-        fetch(`${API_URL}/api/films/${id}`)
+        fetch(`${API_URL}/films/${id}`)
             .then(res => {
                 if (!res.ok) throw new Error("Film introuvable");
                 return res.json();
@@ -59,7 +59,7 @@ export const MovieDetails = () => {
 
         // 2. REQUÊTE PRIVÉE : Avis personnel (uniquement si connecté)
         if (userId && token) {
-            fetch(`${API_URL}/api/users-notes/${userId}/${id}`, {
+            fetch(`${API_URL}/users-notes/${userId}/${id}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export const MovieDetails = () => {
         setIsAdding(true);
         setFeedback(null);
         try {
-            const response = await fetch(`${API_URL}/api/users/${userId}/watchlist`, {
+            const response = await fetch(`${API_URL}/users/${userId}/watchlist`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -119,8 +119,8 @@ export const MovieDetails = () => {
 
         const method = userReview ? "PUT" : "POST";
         const url = userReview 
-            ? `${API_URL}/api/users-notes/${userId}/${id}` 
-            : `${API_URL}/api/users-notes/`;
+            ? `${API_URL}/users-notes/${userId}/${id}` 
+            : `${API_URL}/users-notes/`;
 
         const bodyData = userReview 
             ? { note: reviewForm.note, commentaire: reviewForm.commentaire } 
@@ -157,7 +157,7 @@ export const MovieDetails = () => {
         if (!window.confirm("Voulez-vous vraiment supprimer votre avis ?")) return;
 
         try {
-            const res = await fetch(`${API_URL}/api/users-notes/${userId}/${id}`, {
+            const res = await fetch(`${API_URL}/users-notes/${userId}/${id}`, {
                 method: "DELETE",
                 headers: { 'Authorization': `Bearer ${token}` }
             });

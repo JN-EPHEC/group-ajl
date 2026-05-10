@@ -17,7 +17,7 @@ export const Movies = () => {
 
     useEffect(() => {
         // On récupère les films (le backend doit inclure Realisateur et Genres)
-        fetch(`${API_URL}/api/films`)
+        fetch(`${API_URL}/films`)
             .then(res => {
                 if (!res.ok) throw new Error("Erreur lors de la récupération des films");
                 return res.json();

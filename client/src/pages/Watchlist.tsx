@@ -22,6 +22,8 @@ export const Watchlist = () => {
     
     const navigate = useNavigate();
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
     // 1. Récupération de la watchlist au chargement de la page
     useEffect(() => {
         fetchWatchlist();
@@ -37,7 +39,7 @@ export const Watchlist = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${userId}/watchlist`, {
+            const response = await fetch(`${API_URL}/users/${userId}/watchlist`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -68,7 +70,7 @@ export const Watchlist = () => {
         const userId = localStorage.getItem("user_id");
 
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${userId}/watchlist/${filmId}`, {
+            const response = await fetch(`${API_URL}/users/${userId}/watchlist/${filmId}`, {
                 method: "DELETE",
                 headers: {
                     "Authorization": `Bearer ${token}`

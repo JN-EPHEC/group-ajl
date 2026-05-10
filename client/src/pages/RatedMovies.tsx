@@ -10,7 +10,7 @@ export const RatedMovies = () => {
 
     useEffect(() => {
         
-        fetch(`${API_URL}/api/users-notes`)
+        fetch(`${API_URL}/users-notes`)
             .then(res => {
                 if (!res.ok) throw new Error("Erreur lors de la récupération des notes");
                 return res.json();
