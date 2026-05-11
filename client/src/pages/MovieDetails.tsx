@@ -434,17 +434,6 @@ export const MovieDetails = () => {
                     <div className="mb-4">
 
                         <h5 className="text-uppercase text-muted small fw-bold">
-                            Synopsis
-                        </h5>
-
-                        <p className="lead">
-                            {film.description}
-                        </p>
-                    </div>
-
-                    <div className="mb-4">
-
-                        <h5 className="text-uppercase text-muted small fw-bold">
                             Distribution
                         </h5>
 
