@@ -12,6 +12,9 @@ export const Movies = () => {
     const [genreFilter, setGenreFilter] = useState("");
     const [yearFilter, setYearFilter] = useState("");
     const [minRatingFilter, setMinRatingFilter] = useState("");
+    
+    // Nouvel état pour le tri
+    const [sortOrder, setSortOrder] = useState("");
 
     const API_URL = import.meta.env.VITE_API_URL;
 
@@ -37,7 +40,7 @@ export const Movies = () => {
         moviesList.flatMap(m => m.Genres?.map((g: any) => g.nom) || [])
     )).filter(Boolean).sort();
 
-    // Logique de filtrage
+    // Logique de filtrage ET de tri
     const filteredMovies = moviesList.filter(movie => {
         const lowerCaseSearch = searchTerm.toLowerCase();
         
@@ -50,7 +53,7 @@ export const Movies = () => {
         const matchesGenre = genreFilter === "" || 
             movie.Genres?.some((g: any) => g.nom === genreFilter);
 
-        // ✅ CORRECTION : Utilisation de date_de_sortie
+        // Utilisation de date_de_sortie
         const annee = movie.date_de_sortie ? new Date(movie.date_de_sortie).getFullYear().toString() : "";
         const matchesYear = yearFilter === "" || annee.includes(yearFilter);
 
@@ -59,6 +62,16 @@ export const Movies = () => {
         const matchesRating = minRatingFilter === "" || noteFilm >= parseFloat(minRatingFilter);
 
         return matchesSearch && matchesGenre && matchesYear && matchesRating;
+    }).sort((a, b) => {
+        // Application du tri sélectionné
+        if (sortOrder === "note-desc") {
+            const noteA = parseFloat(a.moyenne) || 0;
+            const noteB = parseFloat(b.moyenne) || 0;
+            return noteB - noteA; // Les mieux notés d'abord
+        } else if (sortOrder === "alpha") {
+            return (a.titre || "").localeCompare(b.titre || ""); // De A à Z
+        }
+        return 0; // Ordre par défaut
     });
 
     if (isLoading) return <div className="container mt-5 text-center"><h4>Chargement du catalogue...</h4></div>;
@@ -107,9 +120,20 @@ export const Movies = () => {
                         <label className="form-label text-muted small mb-1">Note minimale</label>
                         <select className="form-select" value={minRatingFilter} onChange={(e) => setMinRatingFilter(e.target.value)}>
                             <option value="">Toutes les notes</option>
-                            <option value="3">⭐ 3+ / 5</option>
-                            <option value="4">⭐ 4+ / 5</option>
-                            <option value="4.5">⭐ 4.5+ / 5</option>
+                            <option value="6">⭐ 6+ / 10</option>
+                            <option value="7">⭐ 7+ / 10</option>
+                            <option value="8">⭐ 8+ / 10</option>
+                            <option value="9">⭐ 9+ / 10</option>
+                        </select>
+                    </div>
+
+                    {/* Menu pour choisir l'ordre de tri */}
+                    <div className="col-md-3">
+                        <label className="form-label text-muted small mb-1">Trier par</label>
+                        <select className="form-select" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                            <option value="">Ordre par défaut</option>
+                            <option value="note-desc">⭐ Mieux notés</option>
+                            <option value="alpha">🔤 De A à Z</option>
                         </select>
                     </div>
                 </div>
@@ -119,10 +143,10 @@ export const Movies = () => {
 
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                 {filteredMovies.map(movie => (
-                    // ✅ CORRECTION : Utilisation de movie.id_film
+                    // Utilisation de movie.id_film
                     <div className="col" key={movie.id_film}>
                         <div className="card h-100 shadow-sm border-0 movie-card-hover">
-                            {/* ✅ CORRECTION : Utilisation de movie.id_film pour les liens */}
+                            {/* Utilisation de movie.id_film pour les liens */}
                             <Link to={`/films/${movie.id_film}`}>
                                 <img 
                                     src={movie.img || "https://via.placeholder.com/300x450?text=Pas+d'image"} 
@@ -138,7 +162,7 @@ export const Movies = () => {
                                 </Link>
                                 
                                 <p className="card-text text-muted mb-1">
-                                    {/* ✅ CORRECTION : Utilisation de date_de_sortie */}
+                                    {/* Utilisation de date_de_sortie */}
                                     {movie.date_de_sortie ? new Date(movie.date_de_sortie).getFullYear() : "Année inconnue"}
                                 </p>
 
@@ -149,7 +173,7 @@ export const Movies = () => {
                                 <div className="d-flex justify-content-between align-items-center mt-2">
                                     <div className="d-flex flex-wrap gap-1">
                                         {movie.Genres?.slice(0, 2).map((g: any) => (
-                                            // ✅ CORRECTION : Utilisation de g.id_genre
+                                            // Utilisation de g.id_genre
                                             <span key={g.id_genre} className="badge bg-secondary small">{g.nom}</span>
                                         ))}
                                     </div>
