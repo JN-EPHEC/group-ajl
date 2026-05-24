@@ -27,6 +27,20 @@ router.get("/", ActeursControllers.getAllActeurs);
 
 /**
  * @swagger
+ * /api/acteurs/{acteur_id}/films:
+ *   get:
+ *     summary: Récupère la liste des films d'un acteur
+ *     tags: [Acteurs]
+ *     responses:
+ *       200:
+ *         description: Liste des films récupérée avec succès
+ *       500:
+ *         description: Erreur serveur
+ */
+router.get("/:id_acteurs/films", ActeursControllers.getFilmsByActeurs);
+
+/**
+ * @swagger
  * /api/acteurs:
  *   post:
  *     summary: Ajoute un acteurs
@@ -81,6 +95,6 @@ router.post("/", ActeursControllers.createActeurs);
  *       500:
  *         description: Erreur serveur
  */
-router.delete("/:acteur_id", checkIdParam, ActeursControllers.deleteActeurs);
+router.delete("/:id_acteurs", checkIdParam, ActeursControllers.deleteActeurs);
 
 export default router;
