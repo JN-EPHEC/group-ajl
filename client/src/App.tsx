@@ -10,6 +10,7 @@ import { Watchlist } from "./pages/Watchlist";
 import { Profile } from "./pages/Profile";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import { MoviesActor } from "./pages/MoviesActor";
 
 function App() {
     // État pour suivre si l'utilisateur est connecté
@@ -116,6 +117,7 @@ function App() {
                             element={<Login onLoginSuccess={() => setIsAuthenticated(true)} />} 
                         />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/acteurs/:id/films" element={<MoviesActor />} />
                     </Routes>
                 </main>
             </div>

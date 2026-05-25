@@ -14,34 +14,35 @@ export const getAllActeurs = async (req: Request, res: Response) => {
 // Récupérer les films d'un acteur
 export const getFilmsByActeurs = async (req: Request, res: Response) => {
     try {
-
         const id = parseInt(req.params.id_acteurs as string, 10);
 
         const films = await Films.findAll({
             include: [
                 {
                     model: Acteurs,
-                    where: {
-                        id_acteurs: id
-                    },
-                    through: { attributes: [] }
+                    through: { attributes: [] },
+                    required: true
                 }
             ]
         });
 
-        if (films.length > 0) {
-            res.status(200).json(films);
-        } else {
-            res.status(404).json({
+        // filtre côté JS (plus safe si jointure complexe)
+        const filteredFilms = films.filter((film: any) =>
+            film.Acteurs?.some((a: any) => a.id_acteurs === id)
+        );
+
+        if (filteredFilms.length === 0) {
+            return res.status(404).json({
                 message: "Aucun film trouvé pour cet acteur"
             });
         }
 
-    } catch (error) {
+        return res.status(200).json(filteredFilms);
 
+    } catch (error) {
         console.error("Erreur dans getFilmsByActeurs :", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: (error as any).message
         });
     }

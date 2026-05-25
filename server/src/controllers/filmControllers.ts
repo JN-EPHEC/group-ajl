@@ -58,9 +58,9 @@ export const getFilmById = async (req: Request, res: Response) => {
                 ]
             },
             include: [
-                { model: Realisateur, attributes: ['nom', 'prenom'] },
+                { model: Realisateur, attributes: ['id_real','nom', 'prenom'] },
                 { model: Genre, attributes: ['nom'], through: { attributes: [] } },
-                { model: Acteur, attributes: ['nom', 'prenom'], through: { attributes: [] } },
+                { model: Acteur, attributes: ['id_acteurs','nom', 'prenom'], through: { attributes: [] } },
                 { model: User_note, attributes: [] }
             ],
             

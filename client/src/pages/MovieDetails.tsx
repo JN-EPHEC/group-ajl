@@ -440,12 +440,15 @@ export const MovieDetails = () => {
                         <div className="d-flex flex-wrap gap-2">
 
                             {film.Acteurs?.map((a: any) => (
-                                <span
+                                <Link
                                     key={a.id_acteurs}
-                                    className="border p-2 rounded bg-white shadow-sm"
+                                    to={`/acteurs/${a.id_acteurs}/films`}
+                                    className="text-decoration-none text-dark"
                                 >
-                                    👤 {a.prenom} {a.nom}
-                                </span>
+                                    <span className="border p-2 rounded bg-white shadow-sm d-inline-block actor-chip">
+                                        👤 {a.prenom} {a.nom}
+                                    </span>
+                                </Link>
                             ))}
                         </div>
                     </div>
