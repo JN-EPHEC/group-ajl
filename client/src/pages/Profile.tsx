@@ -45,7 +45,7 @@ export const Profile = () => {
         Promise.all([fetchUser, fetchNotes])
             .then(([userData, notesData]) => {
                 setUser(userData);
-                setNotes(Array.isArray(notesData) ? notesData : []);
+                setNotes(Array.isArray(notesData) ? notesData.reverse() : []);
                 setIsLoading(false);
             })
             .catch(err => {

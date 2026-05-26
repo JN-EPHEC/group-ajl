@@ -9,43 +9,43 @@ export const RatedMovies = () => {
     const API_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const res = await fetch(`${API_URL}/users-notes`);
-            if (!res.ok) throw new Error("Erreur lors de la récupération des notes");
+        const fetchData = async () => {
+            try {
+                const res = await fetch(`${API_URL}/users-notes`);
+                if (!res.ok) throw new Error("Erreur lors de la récupération des notes");
 
-            const data = await res.json();
+                const data = await res.json();
 
-            const enriched = await Promise.all(
-                data.map(async (item: any) => {
-                    try {
-                        const resFilm = await fetch(`${API_URL}/films/${item.id_film}`);
-                        const film = await resFilm.json();
+                const enriched = await Promise.all(
+                    data.map(async (item: any) => {
+                        try {
+                            const resFilm = await fetch(`${API_URL}/films/${item.id_film}`);
+                            const film = await resFilm.json();
 
-                        return {
-                            ...item,
-                            Film: {
-                                ...item.Film,
-                                img: film.img
-                            }
-                        };
-                    } catch {
-                        return item;
-                    }
-                })
-            );
+                            return {
+                                ...item,
+                                Film: {
+                                    ...item.Film,
+                                    img: film.img
+                                }
+                            };
+                        } catch {
+                            return item;
+                        }
+                    })
+                );
 
-            setRatedMovies([...enriched].reverse());
-            setIsLoading(false);
+                setRatedMovies([...enriched].reverse());
+                setIsLoading(false);
 
-        } catch (err: any) {
-            setError(err.message);
-            setIsLoading(false);
-        }
-    };
+            } catch (err: any) {
+                setError(err.message);
+                setIsLoading(false);
+            }
+        };
 
-    fetchData();
-}, [API_URL]);
+        fetchData();
+    }, [API_URL]);
 
     if (isLoading) return (
         <div className="container mt-4 text-center">
@@ -64,7 +64,8 @@ export const RatedMovies = () => {
 
             <h1 className="mb-4 fw-bold">Derniers Avis</h1>
 
-            <div className="d-flex flex-column gap-3">
+            {/* FLEX WRAP AU LIEU DE COLUMN */}
+            <div className="d-flex flex-wrap gap-3">
 
                 {ratedMovies.length > 0 ? (
                     ratedMovies.map((item) => (
@@ -72,12 +73,19 @@ export const RatedMovies = () => {
                         <div
                             key={`${item.id_user}-${item.id_film}`}
                             className="card shadow-sm border-0 overflow-hidden"
+                            style={{ width: "32%" }}
                         >
 
-                            <div className="row g-0">
+                            <div className="row g-0 h-100">
 
                                 {/* AFFICHE */}
-                                <div className="col-md-2">
+                                <div
+                                    className="col-md-3 p-0"
+                                    style={{
+                                        minHeight: "100%",
+                                        display: "flex"
+                                    }}
+                                >
                                     <img
                                         src={
                                             item.Film?.img ||
@@ -87,14 +95,15 @@ export const RatedMovies = () => {
                                         style={{
                                             width: "100%",
                                             height: "100%",
-                                            objectFit: "cover"
+                                            objectFit: "cover",
+                                            display: "block"
                                         }}
                                     />
                                 </div>
 
                                 {/* CONTENU */}
-                                <div className="col-md-10">
-                                    <div className="card-body">
+                                <div className="col-md-8">
+                                    <div className="card-body d-flex flex-column h-100">
 
                                         {/* TITRE + USER */}
                                         <div className="d-flex justify-content-between align-items-start">
@@ -126,7 +135,7 @@ export const RatedMovies = () => {
                                         </p>
 
                                         {/* FOOTER */}
-                                        <div className="d-flex justify-content-between align-items-center">
+                                        <div className="d-flex justify-content-between align-items-center mt-auto pt-3">
 
                                             <small className="text-muted">
                                                 ID User : {item.id_user}
