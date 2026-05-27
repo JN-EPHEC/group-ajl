@@ -18,9 +18,10 @@ export default {
   testMatch: ['**/src/tests/**/*.test.ts'],
   //quel fichier mesurer
   collectCoverageFrom: [
-    "../server/src/utils/**/*.ts",
-    "../server/src/middlewares/**/*.ts",
-    "../server/src/controllers/**/*.ts",
-    "!../server/src/**/*.d.ts",
+    "src/utils/**/*.ts",
+    "src/middlewares/**/*.ts",
+    "src/controllers/UserControllers.ts",
+    "src/controllers/filmControllers.ts",
+    "!src/**/*.d.ts",
   ],
 };
