@@ -85,8 +85,8 @@ qui sont soit vraie, soit fausse donc soit 0%, soit 100%.
 ------------------------------|---------|----------|---------|---------|-------------------
 File                          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 ------------------------------|---------|----------|---------|---------|-------------------
-All files                     |   99.26 |    97.45 |     100 |   99.15 |                   
- controllers                  |   99.69 |    97.72 |     100 |   99.65 |                   
+All files                     |   99.29 |     97.5 |     100 |   99.18 |                   
+ controllers                  |    99.7 |    97.82 |     100 |   99.66 |                   
   ActeursControllers.ts       |     100 |      100 |     100 |     100 |                   
   Acteurs_filmsControllers.ts |     100 |      100 |     100 |     100 |                   
   GenresControllers.ts        |     100 |      100 |     100 |     100 |                  
@@ -107,9 +107,10 @@ All files                     |   99.26 |    97.45 |     100 |   99.15 |
 ------------------------------|---------|----------|---------|---------|-------------------
 
 Test Suites: 13 passed, 13 total
-Tests:       131 passed, 131 total
+Tests:       134 passed, 134 total
 Snapshots:   0 total
-Time:        3.428 s
+Time:        3.615 s
+
 
 ```
 ![img.png](img.png)
