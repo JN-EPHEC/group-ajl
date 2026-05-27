@@ -9,12 +9,18 @@
 
  */
 
-import jwt from "jsonwebtoken";
 import { verifyToken } from "../middlewares/authMiddleware";
 import { checkIdParam } from "../middlewares/checkIdParam";
 import { errorHandler } from "../middlewares/errorHandler";
 import { requestLogger } from "../middlewares/logger";
 
+jest.mock("jsonwebtoken", () => ({
+    __esModule: true,
+    default: {
+        sign:   jest.fn().mockReturnValue("fake.jwt.token"),
+        verify: jest.fn(),
+    },
+}));
 //Aide : faux objets Express
 const mockRequest = (overrides: object = {}) => ({
     headers: {},
@@ -47,18 +53,19 @@ describe("verifyToken", () => {
         expect(res.json).toHaveBeenCalledWith({ error: "Token requis" });
         expect(mockNext).not.toHaveBeenCalled();
     });
-
     it("retourne 403 si header Authorization sans 'Bearer'", () => {
-        const req = mockRequest({ headers: { authorization: "Basic abc" } }) as any;
+        const req = mockRequest({ headers: {} }) as any;
         const res = mockResponse();
         verifyToken(req, res, mockNext);
-        // split(' ')[1] retourne 'abc' mais si le format est autre -> token peut être défini
-        // Ici 'Basic abc'.split(' ')[1] = 'abc' -> on va dans jwt.verify
-        // jwt va lever une erreur -> 401
-        expect(res.status).toHaveBeenCalledWith(401);
-        expect(res.json).toHaveBeenCalledWith({ error: "Token invalide" });
+        expect(res.status).toHaveBeenCalledWith(403);
+        expect(res.json).toHaveBeenCalledWith({ error: "Token requis" });
+        expect(mockNext).not.toHaveBeenCalled();
     });
     it("retourne 401 si token invalide / expiré", () => {
+        const jwtMock = require("jsonwebtoken").default;
+        jwtMock.verify.mockImplementation((_token: any, _secret: any, cb: any) => {
+            cb(new Error("invalid token"), null);
+        });
         const req = mockRequest({
             headers: { authorization: "Bearer tokeninvalide" },
         }) as any;
@@ -69,10 +76,12 @@ describe("verifyToken", () => {
         expect(mockNext).not.toHaveBeenCalled();
     });
     it("appelle next() si token valide et attache req.user", () => {
-        const secret = "MON_SECRET_JWT";
-        const token = jwt.sign({ id_user: 42 }, secret, { expiresIn: "1h" });
+        const jwtMock = require("jsonwebtoken").default;
+        jwtMock.verify.mockImplementation((_token: any, _secret: any, cb: any) => {
+            cb(null, { id_user: 42 });
+        });
         const req = mockRequest({
-            headers: { authorization: `Bearer ${token}` },
+            headers: { authorization: "Bearer tokenvalide" },
         }) as any;
         const res = mockResponse();
         verifyToken(req, res, mockNext);

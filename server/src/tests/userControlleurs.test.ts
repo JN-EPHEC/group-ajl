@@ -70,13 +70,19 @@ jest.mock("../models/Users_watchlists", () => ({
 }));
 
 jest.mock("bcrypt", () => ({
-    genSalt: jest.fn().mockResolvedValue("salt"),
-    hash: jest.fn().mockResolvedValue("hashedpwd"),
-    compare: jest.fn(),
+    __esModule: true,
+    default: {
+        genSalt: jest.fn().mockResolvedValue("salt"),
+        hash:    jest.fn().mockResolvedValue("hashedpwd"),
+        compare: jest.fn(),
+    },
 }));
-
 jest.mock("jsonwebtoken", () => ({
-    sign: jest.fn().mockReturnValue("fake.jwt.token"),
+    __esModule: true,
+    default: {
+        sign:   jest.fn().mockReturnValue("fake.jwt.token"),
+        verify: jest.fn(),
+    },
 }));
 
 describe("getAllUsers", () => {
