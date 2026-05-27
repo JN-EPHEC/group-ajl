@@ -10,7 +10,7 @@
     "moduleResolution" : "node",
     "allowSyntheticDefaultImports": true,
     "target": "esnext",
-    "types": ["jest"],
+    "types": ["jest","node"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
