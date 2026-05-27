@@ -69,6 +69,9 @@ Schéma du site:
             ----password.test
             ----shipping.test.ts
             ----userValidator.test.ts
+            ----filmControleurs.test.ts
+            ----middlewares.test.ts
+            ----userControleurs.test.ts
         ---utils
             ----password.ts
             ----shipping.ts
