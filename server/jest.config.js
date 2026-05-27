@@ -20,8 +20,7 @@ export default {
   collectCoverageFrom: [
     "src/utils/**/*.ts",
     "src/middlewares/**/*.ts",
-    "src/controllers/UserControllers.ts",
-    "src/controllers/filmControllers.ts",
+    "src/controllers/**/*.ts",
     "!src/**/*.d.ts",
   ],
 };
