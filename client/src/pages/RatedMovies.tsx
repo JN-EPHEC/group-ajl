@@ -137,10 +137,6 @@ export const RatedMovies = () => {
                                         {/* FOOTER */}
                                         <div className="d-flex justify-content-between align-items-center mt-auto pt-3">
 
-                                            <small className="text-muted">
-                                                ID User : {item.id_user}
-                                            </small>
-
                                             <a
                                                 href={`/films/${item.id_film}`}
                                                 className="btn btn-sm btn-dark"

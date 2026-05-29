@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import '../index.css';
 
 interface UserReview {
@@ -11,6 +11,8 @@ interface UserReview {
 }
 
 export const MovieDetails = () => {
+    const navigate = useNavigate();
+    
     const { id } = useParams<{ id: string }>();
 
     const [film, setFilm] = useState<any>(null);
@@ -319,9 +321,12 @@ export const MovieDetails = () => {
     return (
         <div className="container mt-5">
 
-            <Link to="/films" className="btn btn-outline-secondary mb-4">
+            <button
+                className="btn btn-outline-secondary mb-4"
+                onClick={() => navigate(-1)}
+                >
                 ← Retour
-            </Link>
+            </button>
 
             <div className="row">
 
