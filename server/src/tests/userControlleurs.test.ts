@@ -64,6 +64,7 @@ jest.mock("../models/Users_watchlists", () => ({
     __esModule: true,
     default: {
         findAll: jest.fn(),
+        findOne: jest.fn(),
         create: jest.fn(),
         destroy: jest.fn(),
     },
@@ -155,6 +156,7 @@ describe("addFilmToUsersWatchlist", () => {
     it("retourne 201 si user et film existent", async () => {
         (Users.findByPk as jest.Mock).mockResolvedValue({ id_user: 1 });
         (Film.findByPk as jest.Mock).mockResolvedValue({ id_film: 2 });
+        (Users_watchlist.findOne as jest.Mock).mockResolvedValue(null);
         (Users_watchlist.create as jest.Mock).mockResolvedValue({ id_user: 1, id_film: 2 });
         const req = mockReq({ params: { user_id: "1" }, body: { id_film: 2 } });
         const res = mockRes();
