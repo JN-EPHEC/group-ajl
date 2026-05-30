@@ -10,7 +10,7 @@ C'est un site de classement et de notation de films par les utilisateurs.
 
 L'utilisateur peut parcourir un catalogue de films enrichi de données (réalisateur, acteurs, genres, durée, affiche), consulter la note moyenne calculée à partir des avis de la communauté, et gérer son profil personnel. Une fois inscrit et connecté, il peut :
 
-- **noter** un film de 1 à 5 étoiles et laisser un commentaire,
+- **noter** un film de 1 à 10 étoiles et laisser un commentaire,
 - **gérer sa watchlist** en ajoutant ou retirant des films qu'il souhaite voir,
 - **retrouver ses films notés** depuis son espace profil.
 
