@@ -38,6 +38,8 @@ export const MovieDetails = () => {
     // Tous les avis
     const [allReviews, setAllReviews] = useState<UserReview[]>([]);
 
+    const [infoToast, setInfoToast] = useState<string | null>(null);
+
     const API_URL = import.meta.env.VITE_API_URL;
 
     const userId = localStorage.getItem("user_id");
@@ -111,6 +113,15 @@ export const MovieDetails = () => {
 
     }, [id, API_URL, userId, token]);
 
+    // Afficher un toast si film déjà dans watchlist
+    const showInfoToast = (message: string) => {
+        setInfoToast(message);
+
+        setTimeout(() => {
+            setInfoToast(null);
+        }, 3000);
+    };
+
     // Ajouter à la watchlist
     const handleAddToWatchlist = async () => {
 
@@ -140,27 +151,29 @@ export const MovieDetails = () => {
                 })
             });
 
+            const data = await response.json();
+
             if (response.ok) {
 
-                setFeedback({
-                    type: "success",
-                    msg: "Ajouté à votre liste 🍿"
-                });
+                showInfoToast(
+                    "Ajouté à votre watchlist"
+                );
 
+            } else if (response.status === 409) {
+
+                showInfoToast(data.message);
+                
             } else {
-
-                setFeedback({
-                    type: "warning",
-                    msg: "Déjà dans votre liste."
-                });
+                showInfoToast(
+                    "Erreur lors de l'ajout"
+                );
             }
 
         } catch (err) {
 
-            setFeedback({
-                type: "danger",
-                msg: "Erreur lors de l'ajout."
-            });
+            showInfoToast(
+                    "Erreur lors de l'ajout"
+                );
 
         } finally {
             setIsAdding(false);
@@ -671,6 +684,19 @@ export const MovieDetails = () => {
                     </div>
                 )}
             </div>
+
+            {/* TOAST UNIQUE (CORRIGÉ - HORS MAP) */}
+            {infoToast && (
+                <div
+                    className="toast show position-fixed bottom-0 start-0 m-4 shadow"
+                    style={{ zIndex: 1050, minWidth: "320px" }}
+                >
+                    <div className="toast-body">
+                        {infoToast}
+                    </div>
+                </div>
+            )}
+            
         </div>
     );
 };

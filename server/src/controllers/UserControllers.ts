@@ -70,6 +70,19 @@ export const addFilmToUsersWatchlist = async (req: Request, res: Response) => {
         const film = await Film.findByPk(id_film);
         if (!film) return res.status(404).json({ error: "Film introuvable" });
 
+        const exists = await Users_watchlist.findOne({
+            where: {
+                id_user: user_id,
+                id_film: id_film
+            }
+        });
+
+        if (exists){
+            res.status(409).json({
+                message : "Ce film est déjà dans votre watchlist"
+            });
+        }
+
         const ajoutFilm = await Users_watchlist.create({
             id_user: userIdNum,
             id_film: id_film,
