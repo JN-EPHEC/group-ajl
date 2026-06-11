@@ -34,8 +34,11 @@ et un début de gestion de l'authentification JWT.
 1. **L'organisation en modules ESM** (`"type": "module"` dans `package.json`) combinée à TypeScript obligeait à écrire les imports avec l'extension `.js` dans le code source (ex. `import Film from './models/Films.js'`), ce qui est contre-intuitif quand on travaille avec des fichiers `.ts`.
 2. **Le pattern Singleton** appliqué à la connexion Sequelize (classe `Database` avec `getInstance()`) n'était pas immédiatement lisible pour quelqu'un habitué à exporter directement l'instance.
 
+**Arnaud PEETERS** s'est très vite familiarisé avec l'environnement de travail. L'architecture initiale s'inscrivant dans la continuité directe des travaux pratiques précédents, il n'a rencontré aucun obstacle technique ou structurel pour commencer à développer.
 
 ---
+## 3. Infrastructure de déploiement
+
 **Flux résumé :**
 
 1. Un push sur n'importe quelle branche déclenche le pipeline CI : installation des dépendances et exécution de la suite de tests Jest. Si un test échoue, le merge est bloqué.
